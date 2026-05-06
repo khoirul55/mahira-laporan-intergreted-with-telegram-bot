@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { LogoutButton } from '../(staff)/beranda/logout-button'
-import { LayoutDashboard, Users, Folders, CalendarDays } from 'lucide-react'
+import { LayoutDashboard, Users, Folders, CalendarDays, FileText } from 'lucide-react'
 
 export default function DireksiLayout({
   children,
@@ -32,6 +32,13 @@ export default function DireksiLayout({
           >
             <Folders className="w-4 h-4" />
             Divisi
+          </Link>
+          <Link
+            href="/dashboard/laporan"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            Pantau Laporan
           </Link>
           <Link
             href="/dashboard/users"
