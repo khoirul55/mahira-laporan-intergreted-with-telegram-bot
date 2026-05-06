@@ -1,0 +1,157 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
+
+export type PlanTaskInput = {
+  title: string
+  priority: 'tinggi' | 'sedang' | 'rendah'
+}
+
+export async function createDailyPlan(tasks: PlanTaskInput[]) {
+  if (!tasks || tasks.length === 0) {
+    return { error: 'Rencana kerja tidak boleh kosong' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'Unauthorized' }
+
+  // Get user details
+  const { data: userData } = await supabase
+    .from('users')
+    .select('division_id')
+    .eq('id', user.id)
+    .single()
+
+  if (!userData?.division_id) {
+    return { error: 'Anda belum tergabung dalam divisi apapun. Hubungi pimpinan.' }
+  }
+
+  const today = new Date().toISOString().split('T')[0] // 'YYYY-MM-DD'
+
+  // 1. Create Daily Work Plan
+  const { data: plan, error: planError } = await supabase
+    .from('daily_work_plans')
+    .insert([{ 
+      user_id: user.id, 
+      division_id: userData.division_id, 
+      plan_date: today 
+    }])
+    .select()
+    .single()
+
+  if (planError) {
+    if (planError.code === '23505') return { error: 'Rencana kerja hari ini sudah ada' }
+    return { error: planError.message }
+  }
+
+  // 2. Insert Plan Tasks
+  const tasksToInsert = tasks.map(t => ({
+    plan_id: plan.id,
+    title: t.title,
+    priority: t.priority
+  }))
+
+  const { data: insertedTasks, error: tasksError } = await supabase
+    .from('plan_tasks')
+    .insert(tasksToInsert)
+    .select()
+
+  if (tasksError) {
+    // Rollback is manual since we don't have rpc
+    await supabase.from('daily_work_plans').delete().eq('id', plan.id)
+    return { error: 'Gagal menyimpan tugas' }
+  }
+
+  // 3. Create Draft Daily Report
+  const { data: report, error: reportError } = await supabase
+    .from('daily_reports')
+    .insert([{
+      plan_id: plan.id,
+      user_id: user.id,
+      division_id: userData.division_id,
+      report_date: today,
+      status: 'draft'
+    }])
+    .select()
+    .single()
+
+  if (reportError) {
+    await supabase.from('daily_work_plans').delete().eq('id', plan.id)
+    return { error: 'Gagal membuat draft laporan' }
+  }
+
+  // 4. Create Task Updates (defaults)
+  if (insertedTasks) {
+    const updatesToInsert = insertedTasks.map(t => ({
+      report_id: report.id,
+      plan_task_id: t.id,
+      completion_status: 'dalam_proses',
+      notes: ''
+    }))
+    
+    const { error: updatesError } = await supabase
+      .from('task_updates')
+      .insert(updatesToInsert)
+
+    if (updatesError) {
+      console.error("Error creating task updates defaults:", updatesError)
+    }
+  }
+
+  revalidatePath('/beranda/laporan')
+  return { success: true }
+}
+
+export type TaskUpdateInput = {
+  update_id: number
+  completion_status: 'selesai' | 'dalam_proses' | 'tidak_selesai' | 'dibatalkan'
+  notes: string
+}
+
+export async function submitDailyReport(reportId: number, updates: TaskUpdateInput[]) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'Unauthorized' }
+
+  // Verify ownership
+  const { data: report } = await supabase
+    .from('daily_reports')
+    .select('user_id, status')
+    .eq('id', reportId)
+    .single()
+
+  if (report?.user_id !== user.id) return { error: 'Bukan laporan Anda' }
+  if (report?.status === 'submitted') return { error: 'Laporan ini sudah disubmit' }
+
+  // Update each task update
+  for (const update of updates) {
+    const { error } = await supabase
+      .from('task_updates')
+      .update({
+        completion_status: update.completion_status,
+        notes: update.notes
+      })
+      .eq('id', update.update_id)
+      .eq('report_id', reportId) // extra safety
+      
+    if (error) return { error: `Gagal update tugas: ${error.message}` }
+  }
+
+  // Submit the report
+  const { error: submitError } = await supabase
+    .from('daily_reports')
+    .update({ 
+      status: 'submitted',
+      submitted_at: new Date().toISOString()
+    })
+    .eq('id', reportId)
+
+  if (submitError) return { error: submitError.message }
+
+  revalidatePath('/beranda/laporan')
+  return { success: true }
+}

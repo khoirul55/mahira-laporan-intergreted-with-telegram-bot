@@ -31,25 +31,31 @@ export default async function BerandaPage() {
         </div>
 
         <div className="grid gap-4">
-          <div className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50">
-            <h2 className="text-lg font-semibold text-emerald-400 mb-2">🚧 Dalam Pengembangan</h2>
-            <p className="text-slate-400 text-sm">
-              Halaman beranda staff sedang dibangun. Fitur yang akan tersedia:
-              pengumuman, status laporan hari ini, dan quick actions.
-            </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Link href="/beranda/laporan" className="p-6 rounded-xl bg-slate-900 border border-emerald-500/30 hover:bg-slate-800 transition-colors group flex flex-col justify-between h-full">
+              <div>
+                <h2 className="text-lg font-semibold text-emerald-400 group-hover:text-emerald-300">📝 Laporan Harian</h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Isi rencana kerja pagi dan update laporan di sore hari.
+                </p>
+              </div>
+              <div className="text-emerald-500 group-hover:text-emerald-400 mt-4 self-end">
+                Isi Laporan →
+              </div>
+            </Link>
+
+            <Link href="/beranda/izin" className="p-6 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors group flex flex-col justify-between h-full">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-300 group-hover:text-white">📅 Izin / Absen</h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Ajukan absen sakit, cuti, atau dinas luar dan lihat riwayatnya.
+                </p>
+              </div>
+              <div className="text-slate-500 group-hover:text-white mt-4 self-end">
+                Ajukan Izin →
+              </div>
+            </Link>
           </div>
-          
-          <Link href="/beranda/izin" className="p-6 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors group flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-emerald-400 group-hover:text-emerald-300">📅 Pengajuan Izin / Absen</h2>
-              <p className="text-slate-400 text-sm mt-1">
-                Ajukan absen sakit, cuti, atau dinas luar dan lihat riwayatnya.
-              </p>
-            </div>
-            <div className="text-slate-500 group-hover:text-emerald-400">
-              →
-            </div>
-          </Link>
         </div>
       </div>
     </div>
