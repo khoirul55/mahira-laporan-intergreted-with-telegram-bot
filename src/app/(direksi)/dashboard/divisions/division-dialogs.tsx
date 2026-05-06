@@ -36,11 +36,9 @@ export function CreateDivisionDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Divisi
-        </Button>
+      <DialogTrigger render={<Button className="bg-emerald-600 hover:bg-emerald-700 text-white" />}>
+        <Plus className="w-4 h-4 mr-2" />
+        Tambah Divisi
       </DialogTrigger>
       <DialogContent className="bg-slate-900 border-slate-800 text-white">
         <DialogHeader>
@@ -86,10 +84,8 @@ export function EditDivisionDialog({ division }: { division: any }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white">
-          <Edit2 className="w-4 h-4" />
-        </Button>
+      <DialogTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white" />}>
+        <Edit2 className="w-4 h-4" />
       </DialogTrigger>
       <DialogContent className="bg-slate-900 border-slate-800 text-white">
         <DialogHeader>
@@ -135,10 +131,8 @@ export function DeleteDivisionDialog({ division }: { division: any }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-400 hover:text-rose-300">
-          <Trash2 className="w-4 h-4" />
-        </Button>
+      <DialogTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 text-rose-400 hover:text-rose-300" />}>
+        <Trash2 className="w-4 h-4" />
       </DialogTrigger>
       <DialogContent className="bg-slate-900 border-slate-800 text-white">
         <DialogHeader>
