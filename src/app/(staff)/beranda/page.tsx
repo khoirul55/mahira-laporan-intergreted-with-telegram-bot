@@ -23,7 +23,7 @@ export default async function BerandaPage() {
               Selamat Datang, {userData?.full_name || 'Staff'} 👋
             </h1>
             <p className="text-slate-400 text-sm mt-1">
-              {(userData?.division as { name: string } | null)?.name || 'Belum ada divisi'} • Staff
+              {((userData?.division as unknown) as { name: string } | null)?.name || 'Belum ada divisi'} • Staff
             </p>
           </div>
           <LogoutButton />
