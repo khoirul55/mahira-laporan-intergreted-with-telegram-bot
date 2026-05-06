@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { LogoutButton } from './logout-button'
 
 export default async function BerandaPage() {
@@ -37,6 +38,18 @@ export default async function BerandaPage() {
               pengumuman, status laporan hari ini, dan quick actions.
             </p>
           </div>
+          
+          <Link href="/beranda/izin" className="p-6 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 transition-colors group flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-emerald-400 group-hover:text-emerald-300">📅 Pengajuan Izin / Absen</h2>
+              <p className="text-slate-400 text-sm mt-1">
+                Ajukan absen sakit, cuti, atau dinas luar dan lihat riwayatnya.
+              </p>
+            </div>
+            <div className="text-slate-500 group-hover:text-emerald-400">
+              →
+            </div>
+          </Link>
         </div>
       </div>
     </div>
