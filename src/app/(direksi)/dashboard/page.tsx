@@ -18,6 +18,28 @@ export default async function DashboardPage() {
     redirect('/beranda')
   }
 
+  const today = new Date().toISOString().split('T')[0]
+
+  // Get total active staff
+  const { count: totalStaff } = await supabase
+    .from('users')
+    .select('*', { count: 'exact', head: true })
+    .eq('role', 'staff')
+    .eq('is_active', true)
+
+  // Get submitted reports today
+  const { count: reportsToday } = await supabase
+    .from('daily_reports')
+    .select('*', { count: 'exact', head: true })
+    .eq('report_date', today)
+    .eq('status', 'submitted')
+
+  // Get absences today
+  const { count: absencesToday } = await supabase
+    .from('absences')
+    .select('*', { count: 'exact', head: true })
+    .eq('absence_date', today)
+
   return (
     <div className="p-6 md:p-10">
       <div className="mb-8">
@@ -28,18 +50,17 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {/* Placeholder cards for future data */}
         <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-          <h3 className="text-sm font-medium text-slate-400">Total Staff</h3>
-          <p className="text-3xl font-bold mt-2 text-emerald-400">...</p>
+          <h3 className="text-sm font-medium text-slate-400">Total Staff Aktif</h3>
+          <p className="text-3xl font-bold mt-2 text-emerald-400">{totalStaff || 0}</p>
         </div>
         <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
           <h3 className="text-sm font-medium text-slate-400">Laporan Masuk Hari Ini</h3>
-          <p className="text-3xl font-bold mt-2 text-cyan-400">...</p>
+          <p className="text-3xl font-bold mt-2 text-cyan-400">{reportsToday || 0}</p>
         </div>
         <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-          <h3 className="text-sm font-medium text-slate-400">Izin Pending</h3>
-          <p className="text-3xl font-bold mt-2 text-amber-400">...</p>
+          <h3 className="text-sm font-medium text-slate-400">Izin Hari Ini</h3>
+          <p className="text-3xl font-bold mt-2 text-amber-400">{absencesToday || 0}</p>
         </div>
       </div>
     </div>
