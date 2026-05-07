@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Sistem pelaporan kerja dan monitoring internal Mahira Tour",
 };
 
+import { Toaster } from 'sonner'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,10 @@ export default function RootLayout({
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Toaster position="top-center" theme="dark" richColors />
+      </body>
     </html>
   );
 }

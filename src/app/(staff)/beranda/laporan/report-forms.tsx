@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +20,7 @@ import { Plus, Trash2, CheckCircle2, UploadCloud, X, ImageIcon } from 'lucide-re
 import { Badge } from '@/components/ui/badge'
 
 export function CreatePlanForm() {
+  const router = useRouter()
   const [tasks, setTasks] = useState<PlanTaskInput[]>([{ title: '', priority: 'sedang' }])
   const [loading, setLoading] = useState(false)
 
@@ -56,6 +58,7 @@ export function CreatePlanForm() {
       toast.error(res.error)
     } else {
       toast.success('Rencana kerja berhasil disimpan')
+      router.refresh()
     }
   }
 
@@ -113,6 +116,7 @@ export function CreatePlanForm() {
 
 
 export function UpdateReportForm({ report, updates }: { report: any, updates: any[] }) {
+  const router = useRouter()
   const [taskUpdates, setTaskUpdates] = useState<TaskUpdateInput[]>(
     updates.map(u => ({
       update_id: u.id,
@@ -171,6 +175,7 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
       toast.error(res.error)
     } else {
       toast.success('Laporan harian berhasil dikirim!')
+      router.refresh()
     }
   }
 
