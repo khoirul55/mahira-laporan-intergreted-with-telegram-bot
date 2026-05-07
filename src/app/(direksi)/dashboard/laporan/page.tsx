@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import {
   Table,
   TableBody,
@@ -39,7 +40,7 @@ export default async function PantauLaporanPage() {
   // 2. Fetch today's reports
   const { data: reports } = await supabase
     .from('daily_reports')
-    .select('user_id, status, submitted_at')
+    .select('id, user_id, status, submitted_at')
     .eq('report_date', today)
 
   // 3. Fetch today's absences
@@ -99,8 +100,16 @@ export default async function PantauLaporanPage() {
                       {statusBadge}
                     </TableCell>
                     <TableCell className="text-right">
-                      {/* TODO: Add link to detail page */}
-                      <span className="text-xs text-slate-600 italic">Lihat Detail (Segera)</span>
+                      {staffReport ? (
+                        <Link 
+                          href={`/dashboard/laporan/${staffReport.id}`}
+                          className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+                        >
+                          Lihat Detail
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-slate-600 italic">-</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 )

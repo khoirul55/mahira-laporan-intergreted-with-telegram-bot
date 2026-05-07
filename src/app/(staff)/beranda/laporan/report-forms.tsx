@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +15,7 @@ import {
 } from '@/components/ui/select'
 import { createDailyPlan, submitDailyReport, PlanTaskInput, TaskUpdateInput } from '@/actions/report'
 import { toast } from 'sonner'
-import { Plus, Trash2, CheckCircle2 } from 'lucide-react'
+import { Plus, Trash2, CheckCircle2, UploadCloud, X, ImageIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export function CreatePlanForm() {
@@ -120,6 +121,9 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     }))
   )
   const [loading, setLoading] = useState(false)
+  const [evidenceFile, setEvidenceFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleUpdateChange = (index: number, field: keyof TaskUpdateInput, value: string) => {
     const newUpdates = [...taskUpdates]
@@ -135,13 +139,59 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     }
 
     setLoading(true)
-    const res = await submitDailyReport(report.id, taskUpdates)
+
+    let evidenceUrl = null
+    if (evidenceFile) {
+      const supabase = createClient()
+      const fileExt = evidenceFile.name.split('.').pop()
+      const fileName = `${report.id}_${Date.now()}.${fileExt}`
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('report_evidences')
+        .upload(fileName, evidenceFile)
+
+      if (uploadError) {
+        toast.error(`Gagal upload foto: ${uploadError.message}`)
+        setLoading(false)
+        return
+      }
+      
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('report_evidences')
+        .getPublicUrl(fileName)
+        
+      evidenceUrl = publicUrlData.publicUrl
+    }
+
+    const res = await submitDailyReport(report.id, taskUpdates, evidenceUrl)
     setLoading(false)
 
     if (res?.error) {
       toast.error(res.error)
     } else {
       toast.success('Laporan harian berhasil dikirim!')
+    }
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error('Ukuran file maksimal 5MB')
+      return
+    }
+
+    setEvidenceFile(file)
+    setPreviewUrl(URL.createObjectURL(file))
+  }
+
+  const removeFile = () => {
+    setEvidenceFile(null)
+    setPreviewUrl(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
   }
 
@@ -200,6 +250,44 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
 
           </div>
         ))}
+      </div>
+
+      <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/50 mt-6">
+        <h3 className="font-semibold text-slate-200 flex items-center gap-2 mb-4">
+          <ImageIcon className="w-5 h-5 text-emerald-400" />
+          Upload Bukti Foto Laporan
+        </h3>
+        
+        {previewUrl ? (
+          <div className="relative inline-block border border-slate-800 rounded-lg overflow-hidden group">
+            <img src={previewUrl} alt="Preview" className="w-full max-w-sm h-auto object-cover rounded-lg" />
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <Button type="button" variant="destructive" size="sm" onClick={removeFile}>
+                <Trash2 className="w-4 h-4 mr-2" /> Hapus Foto
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-slate-700 hover:border-emerald-500/50 bg-slate-950 hover:bg-emerald-500/5 transition-colors rounded-xl p-8 text-center cursor-pointer flex flex-col items-center justify-center gap-3"
+          >
+            <div className="p-3 bg-slate-900 rounded-full">
+              <UploadCloud className="w-6 h-6 text-slate-400" />
+            </div>
+            <div>
+              <p className="text-slate-300 font-medium">Klik untuk upload atau drag & drop</p>
+              <p className="text-slate-500 text-sm mt-1">SVG, PNG, JPG atau GIF (Max. 5MB)</p>
+            </div>
+            <input 
+              type="file" 
+              className="hidden" 
+              ref={fileInputRef} 
+              accept="image/*" 
+              onChange={handleFileSelect}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end pt-4 border-t border-slate-800">

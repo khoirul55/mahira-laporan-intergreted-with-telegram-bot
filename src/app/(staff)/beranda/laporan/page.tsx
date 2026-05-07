@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, AlertCircle, FileCheck2, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, AlertCircle, FileCheck2, ShieldAlert, MessageSquare } from 'lucide-react'
 import { CreatePlanForm, UpdateReportForm } from './report-forms'
 import { Badge } from '@/components/ui/badge'
 
@@ -76,7 +76,7 @@ export default async function LaporanPage() {
   // 3. Cek Rencana & Laporan Hari Ini
   const { data: todayReport } = await supabase
     .from('daily_reports')
-    .select('id, status, plan:daily_work_plans(plan_tasks(*)), task_updates(*, plan_task:plan_tasks(*))')
+    .select('id, status, direksi_notes, evidence_url, plan:daily_work_plans(plan_tasks(*)), task_updates(*, plan_task:plan_tasks(*))')
     .eq('user_id', user.id)
     .eq('report_date', today)
     .single()
@@ -115,8 +115,8 @@ export default async function LaporanPage() {
               </p>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="font-bold text-slate-300">Ringkasan Hari Ini:</h3>
+              <h3 className="font-bold text-slate-300 mb-4">Ringkasan Hari Ini:</h3>
+              <div className="space-y-4">
               {todayReport.task_updates.map((update: any, idx: number) => (
                 <div key={update.id} className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
@@ -134,7 +134,32 @@ export default async function LaporanPage() {
                   </div>
                 </div>
               ))}
+              </div>
+
+              {todayReport.evidence_url && (
+                <div className="mt-6 p-4 rounded-xl border border-slate-800 bg-slate-900/50">
+                  <h4 className="font-medium text-slate-300 mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" /> Bukti Foto Laporan
+                  </h4>
+                  <img 
+                    src={todayReport.evidence_url} 
+                    alt="Bukti Laporan" 
+                    className="max-w-full md:max-w-md rounded-lg border border-slate-700"
+                  />
+                </div>
+              )}
             </div>
+
+            {todayReport.direksi_notes && (
+              <div className="mt-8 p-6 bg-slate-900 border border-emerald-500/30 rounded-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <h3 className="font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Feedback Pimpinan
+                </h3>
+                <p className="text-slate-300 whitespace-pre-wrap">{todayReport.direksi_notes}</p>
+              </div>
+            )}
           </div>
         )}
 

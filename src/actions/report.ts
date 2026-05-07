@@ -111,7 +111,7 @@ export type TaskUpdateInput = {
   notes: string
 }
 
-export async function submitDailyReport(reportId: number, updates: TaskUpdateInput[]) {
+export async function submitDailyReport(reportId: number, updates: TaskUpdateInput[], evidenceUrl?: string | null) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -146,12 +146,41 @@ export async function submitDailyReport(reportId: number, updates: TaskUpdateInp
     .from('daily_reports')
     .update({ 
       status: 'submitted',
-      submitted_at: new Date().toISOString()
+      submitted_at: new Date().toISOString(),
+      evidence_url: evidenceUrl || null
     })
     .eq('id', reportId)
 
   if (submitError) return { error: submitError.message }
 
   revalidatePath('/beranda/laporan')
+  return { success: true }
+}
+
+export async function addDireksiNotes(reportId: number, notes: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'Unauthorized' }
+
+  // Check if direksi
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (currentUser?.role !== 'direksi') {
+    return { error: 'Hanya direksi yang bisa memberikan catatan' }
+  }
+
+  const { error } = await supabase
+    .from('daily_reports')
+    .update({ direksi_notes: notes })
+    .eq('id', reportId)
+
+  if (error) return { error: error.message }
+
+  revalidatePath(`/dashboard/laporan/${reportId}`)
   return { success: true }
 }
