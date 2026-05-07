@@ -148,7 +148,6 @@ export default async function LaporanPage() {
                   />
                 </div>
               )}
-            </div>
 
             {todayReport.direksi_notes && (
               <div className="mt-8 p-6 bg-slate-900 border border-emerald-500/30 rounded-xl relative overflow-hidden">
