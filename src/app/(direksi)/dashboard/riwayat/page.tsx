@@ -1,0 +1,54 @@
+import { Suspense } from 'react'
+import { searchAllReports, getSearchStats, getDivisions } from '@/actions/search'
+import SearchClient from '../laporan/search-client'
+
+async function RiwayatContent() {
+  const { data: reports, error } = await searchAllReports({})
+  const { data: stats } = await getSearchStats({}, true)
+  const { data: divisions } = await getDivisions()
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-lg font-semibold text-red-600">Error Memuat Data</h3>
+        <p className="text-sm text-gray-500 mt-2">{error}</p>
+      </div>
+    )
+  }
+
+  return (
+    <SearchClient 
+      initialReports={reports || []}
+      initialStats={stats || { total: 0, submitted: 0, draft: 0, plan_only: 0 }}
+      initialDivisions={divisions || []}
+    />
+  )
+}
+
+export default function RiwayatPage() {
+  return (
+    <div className="container mx-auto py-6">
+      <Suspense fallback={
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-24 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+          <div className="animate-pulse">
+            <div className="h-32 bg-gray-200 rounded mb-4"></div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      }>
+        <RiwayatContent />
+      </Suspense>
+    </div>
+  )
+}
