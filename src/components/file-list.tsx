@@ -43,8 +43,8 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
       } else {
         // Create download link
         const link = document.createElement('a')
-        link.href = result.downloadUrl
-        link.download = file.filename
+        link.href = result.downloadUrl as string
+        link.download = file.filename || 'download'
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

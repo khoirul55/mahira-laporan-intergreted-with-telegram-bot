@@ -16,8 +16,8 @@ interface ArchiveFilterClientProps {
 
 export default function ArchiveFilterClient({ initialFiles, divisions }: ArchiveFilterClientProps) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedDivision, setSelectedDivision] = useState<string>('all')
-  const [selectedFileType, setSelectedFileType] = useState<string>('all')
+  const [selectedDivision, setSelectedDivision] = useState<string | null>('all')
+  const [selectedFileType, setSelectedFileType] = useState<string | null>('all')
 
   const filteredFiles = useMemo(() => {
     return initialFiles.filter(file => {
@@ -31,6 +31,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
       // Division filter
       const matchesDivision = 
         selectedDivision === 'all' || 
+        selectedDivision === null ||
         file.division_id.toString() === selectedDivision
 
       // File type filter
@@ -44,6 +45,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
 
       const matchesFileType = 
         selectedFileType === 'all' || 
+        selectedFileType === null ||
         getFileType(file.file_type) === selectedFileType
 
       return matchesSearch && matchesDivision && matchesFileType

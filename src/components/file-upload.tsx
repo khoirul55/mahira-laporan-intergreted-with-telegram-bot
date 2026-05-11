@@ -123,7 +123,7 @@ export function FileUpload({ divisionId, onUploadSuccess }: FileUploadProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button>
           <Upload className="w-4 h-4 mr-2" />
           Upload File
