@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -13,9 +13,11 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // Set di request (untuk server components di bawah)
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
+          // Set di response (agar browser menyimpan session cookie)
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -42,7 +44,6 @@ export async function middleware(request: NextRequest) {
   if (user && request.nextUrl.pathname.startsWith('/login')) {
     const url = request.nextUrl.clone()
 
-    // Cek role user untuk redirect yang tepat
     const { data: userData } = await supabase
       .from('users')
       .select('role')
@@ -54,6 +55,7 @@ export async function middleware(request: NextRequest) {
     } else {
       url.pathname = '/beranda'
     }
+
     return NextResponse.redirect(url)
   }
 

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { uploadArchiveFile } from '@/actions/archive'
@@ -122,13 +122,12 @@ export function FileUpload({ divisionId, onUploadSuccess }: FileUploadProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <Button>
-          <Upload className="w-4 h-4 mr-2" />
-          Upload File
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button onClick={() => setIsOpen(true)}>
+        <Upload className="w-4 h-4 mr-2" />
+        Upload File
+      </Button>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Upload File ke Arsip Divisi</DialogTitle>
@@ -225,5 +224,6 @@ export function FileUpload({ divisionId, onUploadSuccess }: FileUploadProps) {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   )
 }
