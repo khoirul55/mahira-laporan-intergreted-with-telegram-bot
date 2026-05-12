@@ -43,13 +43,7 @@ async function ArchiveContent() {
           <h1 className="text-2xl font-bold">Arsip Dokumen Divisi</h1>
           <p className="text-gray-600">Kelola dokumen dan file divisi Anda</p>
         </div>
-        <FileUpload 
-          divisionId={divisionId}
-          onUploadSuccess={() => {
-            // This will trigger a server action to refresh the data
-            // In a real app, you might want to use a more sophisticated refresh mechanism
-          }}
-        />
+        <FileUpload divisionId={divisionId} />
       </div>
 
       {/* Stats Cards */}
@@ -110,12 +104,6 @@ async function ArchiveContent() {
       <FileList 
         files={files || []}
         isDireksi={false}
-        onFileDeleted={() => {
-          // Trigger refresh
-        }}
-        onFileUpdated={() => {
-          // Trigger refresh
-        }}
       />
     </div>
   )
