@@ -62,6 +62,18 @@ export default async function BerandaPage() {
                 Ajukan Izin →
               </div>
             </Link>
+
+            <Link href="/beranda/arsip" className="p-6 rounded-xl bg-slate-900 border border-blue-500/30 hover:bg-slate-800 transition-colors group flex flex-col justify-between h-full md:col-span-2">
+              <div>
+                <h2 className="text-lg font-semibold text-blue-400 group-hover:text-blue-300">🗂️ Arsip Dokumen Divisi</h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Upload dan kelola dokumen divisi seperti SOP, kontrak, laporan, dan template.
+                </p>
+              </div>
+              <div className="text-blue-500 group-hover:text-blue-400 mt-4 self-end">
+                Buka Arsip →
+              </div>
+            </Link>
           </div>
         </div>
 
