@@ -28,7 +28,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
 
   // Filter files based on search
   const filteredFiles = files.filter(file =>
-    file.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     file.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     file.users?.full_name.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -36,7 +36,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
   const handleDownload = async (file: ArchiveFile) => {
     setDownloadingId(file.id)
     try {
-      const result = await downloadArchiveFile(file.file_path, file.filename)
+      const result = await downloadArchiveFile(file.file_path, file.title)
       
       if (result.error) {
         toast.error(result.error)
@@ -44,7 +44,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
         // Create download link
         const link = document.createElement('a')
         link.href = result.downloadUrl as string
-        link.download = file.filename || 'download'
+        link.download = file.title || 'download'
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
@@ -192,7 +192,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
                         <div className="flex items-center space-x-3">
                           <span className="text-xl">{getFileIcon(file.file_type)}</span>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{file.filename}</div>
+                            <div className="font-medium truncate">{file.title}</div>
                             {editingId === file.id ? (
                               <div className="flex items-center space-x-2 mt-1">
                                 <Input

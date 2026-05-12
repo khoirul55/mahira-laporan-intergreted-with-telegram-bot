@@ -7,11 +7,13 @@ export interface ArchiveFile {
   id: number
   division_id: number
   uploaded_by: string
-  filename: string
+  title: string       // nama kolom di division_documents
   file_path: string
   file_size: number
   file_type: string
   description: string
+  category: string
+  is_pinned: boolean
   created_at: string
   divisions?: {
     name: string
@@ -58,15 +60,16 @@ export async function uploadArchiveFile(
 
     // Save file metadata to database
     const { error: dbError } = await supabase
-      .from('division_files')
+      .from('division_documents')
       .insert({
         division_id: divisionId,
         uploaded_by: user.id,
-        filename: file.name,
+        title: file.name,
         file_path: filePath,
         file_size: file.size,
         file_type: file.type,
-        description: description || null
+        description: description || null,
+        category: 'lainnya'
       })
 
     if (dbError) {
@@ -119,11 +122,11 @@ export async function getDivisionFiles() {
 
     // Get files for user's division
     const { data, error } = await supabase
-      .from('division_files')
+      .from('division_documents')
       .select(`
         *,
         divisions(name),
-        users(full_name)
+        users!uploaded_by(full_name)
       `)
       .eq('division_id', userData.division_id)
       .order('created_at', { ascending: false })
@@ -150,11 +153,11 @@ export async function getAllFiles(divisionId?: number) {
 
   try {
     let query = supabase
-      .from('division_files')
+      .from('division_documents')
       .select(`
         *,
         divisions(name),
-        users(full_name)
+        users!uploaded_by(full_name)
       `)
       .order('created_at', { ascending: false })
 
@@ -216,7 +219,7 @@ export async function deleteArchiveFile(fileId: number) {
   try {
     // Get file info first
     const { data: fileData, error: fetchError } = await supabase
-      .from('division_files')
+      .from('division_documents')
       .select('file_path')
       .eq('id', fileId)
       .single()
@@ -236,7 +239,7 @@ export async function deleteArchiveFile(fileId: number) {
 
     // Delete from database
     const { error: dbError } = await supabase
-      .from('division_files')
+      .from('division_documents')
       .delete()
       .eq('id', fileId)
 
@@ -265,7 +268,7 @@ export async function updateFileDescription(fileId: number, description: string)
 
   try {
     const { error } = await supabase
-      .from('division_files')
+      .from('division_documents')
       .update({ description })
       .eq('id', fileId)
 
