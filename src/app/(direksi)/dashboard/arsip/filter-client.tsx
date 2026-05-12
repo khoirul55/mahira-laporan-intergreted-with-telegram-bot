@@ -23,7 +23,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
     return initialFiles.filter(file => {
       // Search filter
       const matchesSearch = 
-        file.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.users?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.divisions?.name.toLowerCase().includes(searchTerm.toLowerCase())
