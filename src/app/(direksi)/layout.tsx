@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { LogoutButton } from '../(staff)/beranda/logout-button'
-import { LayoutDashboard, Users, Folders, CalendarDays, FileText, Megaphone } from 'lucide-react'
+import { LayoutDashboard, Users, Folders, CalendarDays, FileText, Megaphone, FolderOpen } from 'lucide-react'
 
 export default function DireksiLayout({
   children,
@@ -60,6 +60,13 @@ export default function DireksiLayout({
           >
             <CalendarDays className="w-4 h-4" />
             Rekap Izin
+          </Link>
+          <Link
+            href="/dashboard/arsip"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <FolderOpen className="w-4 h-4" />
+            Arsip Dokumen
           </Link>
         </nav>
 
