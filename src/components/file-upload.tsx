@@ -1,12 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { uploadArchiveFile } from '@/actions/archive'
 import { Upload, File, X, Loader2 } from 'lucide-react'
@@ -123,107 +117,116 @@ export function FileUpload({ divisionId, onUploadSuccess }: FileUploadProps) {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>
-        <Upload className="w-4 h-4 mr-2" />
-        Upload File
-      </Button>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Upload File ke Arsip Divisi</DialogTitle>
-          <DialogDescription>
-            Upload dokumen untuk disimpan di arsip divisi Anda
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          {/* File Drop Area */}
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-              dragActive
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif"
-            />
+      <button
+        onClick={() => setIsOpen(true)}
+        className="btn-primary"
+      >
+        <Upload className="w-4 h-4" />
+        <span>Upload File</span>
+      </button>
+      
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsOpen(false)} />
+          <div className="surface relative z-10 w-full max-w-md p-6">
+            <div className="mb-4">
+              <h2 className="text-page-title mb-1">Upload File ke Arsip Divisi</h2>
+              <p className="text-body text-sm">
+                Upload dokumen untuk disimpan di arsip divisi Anda
+              </p>
+            </div>
             
-            {selectedFile ? (
+            <div className="space-y-4">
+              {/* File Drop Area */}
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+                  dragActive
+                    ? 'border-primary bg-[var(--accent)]'
+                    : 'border-border hover:border-muted-foreground'
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif"
+                />
+                
+                {selectedFile ? (
+                  <div className="space-y-2">
+                    <div className="text-3xl">{getFileIcon(selectedFile.type)}</div>
+                    <div className="text-data text-sm">{selectedFile.name}</div>
+                    <div className="text-meta">{formatFileSize(selectedFile.size)}</div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedFile(null)
+                      }}
+                      className="btn-ghost text-xs mt-2"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Hapus
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="w-8 h-8 mx-auto text-muted-foreground opacity-50" />
+                    <div className="text-body text-sm">
+                      Drag & drop file di sini atau klik untuk memilih
+                    </div>
+                    <div className="text-meta">
+                      PDF, Word, Excel, TXT, JPG, PNG (Maks. 10MB)
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
               <div className="space-y-2">
-                <div className="text-3xl">{getFileIcon(selectedFile.type)}</div>
-                <div className="text-sm font-medium">{selectedFile.name}</div>
-                <div className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedFile(null)
-                  }}
+                <label className="text-section-label block">Deskripsi (opsional)</label>
+                <textarea
+                  placeholder="Tambahkan deskripsi file..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  className="input-clean resize-none"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  disabled={isUploading}
+                  className="btn-ghost"
                 >
-                  <X className="w-4 h-4 mr-1" />
-                  Hapus
-                </Button>
+                  Batal
+                </button>
+                <button
+                  onClick={handleUpload}
+                  disabled={!selectedFile || isUploading}
+                  className="btn-primary"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Mengupload...</span>
+                    </>
+                  ) : (
+                    'Upload'
+                  )}
+                </button>
               </div>
-            ) : (
-              <div className="space-y-2">
-                <Upload className="w-8 h-8 mx-auto text-gray-400" />
-                <div className="text-sm text-gray-600">
-                  Drag & drop file di sini atau klik untuk memilih
-                </div>
-                <div className="text-xs text-gray-500">
-                  PDF, Word, Excel, TXT, JPG, PNG (Maks. 10MB)
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Deskripsi (opsional)</label>
-            <Textarea
-              placeholder="Tambahkan deskripsi file..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-              disabled={isUploading}
-            >
-              Batal
-            </Button>
-            <Button
-              onClick={handleUpload}
-              disabled={!selectedFile || isUploading}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Mengupload...
-                </>
-              ) : (
-                'Upload'
-              )}
-            </Button>
+            </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
     </>
   )
 }

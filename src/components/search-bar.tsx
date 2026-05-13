@@ -1,11 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CalendarIcon, Filter, Search, X } from 'lucide-react'
+import { Filter, Search, X } from 'lucide-react'
 
 interface SearchBarProps {
   placeholder?: string
@@ -61,39 +57,38 @@ export function SearchBar({
       {/* Search Input */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <input
+            type="text"
             placeholder={placeholder}
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-10"
+            className="input-clean pl-10"
           />
         </div>
         
         {(filters.dateRange || filters.division || filters.status || filters.fileType) && (
-          <Button
-            variant="outline"
+          <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
+            className="btn-ghost flex items-center gap-2"
           >
             <Filter className="w-4 h-4" />
-            Filter
+            <span>Filter</span>
             {Object.keys(activeFilters).length > 0 && (
-              <Badge variant="secondary" className="ml-1">
+              <span className="badge-neutral">
                 {Object.keys(activeFilters).length}
-              </Badge>
+              </span>
             )}
-          </Button>
+          </button>
         )}
 
         {hasActiveFilters && (
-          <Button
-            variant="outline"
+          <button
             onClick={clearAllFilters}
-            className="text-gray-600 hover:text-gray-800"
+            className="btn-ghost text-muted-foreground hover:text-foreground"
           >
             <X className="w-4 h-4" />
-          </Button>
+          </button>
         )}
       </div>
 
@@ -101,9 +96,9 @@ export function SearchBar({
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2">
           {searchQuery && (
-            <Badge variant="secondary">
+            <span className="badge-neutral">
               Search: "{searchQuery}"
-            </Badge>
+            </span>
           )}
           {Object.entries(activeFilters).map(([key, value]) => {
             let displayValue = value
@@ -112,9 +107,9 @@ export function SearchBar({
               displayValue = division?.name || value
             }
             return (
-              <Badge key={key} variant="secondary">
+              <span key={key} className="badge-neutral">
                 {key.replace('_', ' ')}: {displayValue}
-              </Badge>
+              </span>
             )
           })}
         </div>
@@ -122,119 +117,105 @@ export function SearchBar({
 
       {/* Filter Options */}
       {showFilters && (
-        <div className="border rounded-lg p-4 bg-gray-50">
+        <div className="surface p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Date Range Filter */}
             {filters.dateRange && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Tanggal</label>
-                <Select
+                <label className="text-section-label block">Tanggal</label>
+                <select
                   value={activeFilters.dateRange || 'all'}
-                  onValueChange={(value) => handleFilterChange('dateRange', value || '')}
+                  onChange={(e) => handleFilterChange('dateRange', e.target.value || '')}
+                  className="input-clean"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih tanggal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Tanggal</SelectItem>
-                    <SelectItem value="today">Hari Ini</SelectItem>
-                    <SelectItem value="yesterday">Kemarin</SelectItem>
-                    <SelectItem value="this_week">Minggu Ini</SelectItem>
-                    <SelectItem value="last_week">Minggu Lalu</SelectItem>
-                    <SelectItem value="this_month">Bulan Ini</SelectItem>
-                    <SelectItem value="last_month">Bulan Lalu</SelectItem>
-                    <SelectItem value="custom">Custom Range</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="all">Semua Tanggal</option>
+                  <option value="today">Hari Ini</option>
+                  <option value="yesterday">Kemarin</option>
+                  <option value="this_week">Minggu Ini</option>
+                  <option value="last_week">Minggu Lalu</option>
+                  <option value="this_month">Bulan Ini</option>
+                  <option value="last_month">Bulan Lalu</option>
+                  <option value="custom">Custom Range</option>
+                </select>
               </div>
             )}
 
             {/* Division Filter */}
             {filters.division && divisions.length > 0 && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Divisi</label>
-                <Select
+                <label className="text-section-label block">Divisi</label>
+                <select
                   value={activeFilters.division_id || 'all'}
-                  onValueChange={(value) => handleFilterChange('division_id', value || '')}
+                  onChange={(e) => handleFilterChange('division_id', e.target.value || '')}
+                  className="input-clean"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Semua Divisi" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Divisi</SelectItem>
-                    {divisions.map((division) => (
-                      <SelectItem key={division.id} value={division.id.toString()}>
-                        {division.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="all">Semua Divisi</option>
+                  {divisions.map((division) => (
+                    <option key={division.id} value={division.id.toString()}>
+                      {division.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
             {/* Status Filter */}
             {filters.status && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select
+                <label className="text-section-label block">Status</label>
+                <select
                   value={activeFilters.status || 'all'}
-                  onValueChange={(value) => handleFilterChange('status', value || '')}
+                  onChange={(e) => handleFilterChange('status', e.target.value || '')}
+                  className="input-clean"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Semua Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Status</SelectItem>
-                    <SelectItem value="submitted">Sudah Submit</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="plan_only">Baru Rencana</SelectItem>
-                    <SelectItem value="overdue">Terlambat</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="all">Semua Status</option>
+                  <option value="submitted">Sudah Submit</option>
+                  <option value="draft">Draft</option>
+                  <option value="plan_only">Baru Rencana</option>
+                  <option value="overdue">Terlambat</option>
+                </select>
               </div>
             )}
 
             {/* File Type Filter */}
             {filters.fileType && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Tipe File</label>
-                <Select
+                <label className="text-section-label block">Tipe File</label>
+                <select
                   value={activeFilters.file_type || 'all'}
-                  onValueChange={(value) => handleFilterChange('file_type', value || '')}
+                  onChange={(e) => handleFilterChange('file_type', e.target.value || '')}
+                  className="input-clean"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Semua Tipe" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Tipe</SelectItem>
-                    <SelectItem value="pdf">PDF</SelectItem>
-                    <SelectItem value="excel">Excel</SelectItem>
-                    <SelectItem value="word">Word</SelectItem>
-                    <SelectItem value="image">Gambar</SelectItem>
-                    <SelectItem value="other">Lainnya</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="all">Semua Tipe</option>
+                  <option value="pdf">PDF</option>
+                  <option value="excel">Excel</option>
+                  <option value="word">Word</option>
+                  <option value="image">Gambar</option>
+                  <option value="other">Lainnya</option>
+                </select>
               </div>
             )}
           </div>
 
           {/* Custom Date Range (if selected) */}
           {activeFilters.dateRange === 'custom' && (
-            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
+            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Dari Tanggal</label>
-                <Input
+                <label className="text-section-label block">Dari Tanggal</label>
+                <input
                   type="date"
                   value={activeFilters.date_from || ''}
                   onChange={(e) => handleFilterChange('date_from', e.target.value || '')}
+                  className="input-clean"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Sampai Tanggal</label>
-                <Input
+                <label className="text-section-label block">Sampai Tanggal</label>
+                <input
                   type="date"
                   value={activeFilters.date_to || ''}
                   onChange={(e) => handleFilterChange('date_to', e.target.value || '')}
+                  className="input-clean"
                 />
               </div>
             </div>

@@ -1,13 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { toast } from 'sonner'
 import { downloadArchiveFile, deleteArchiveFile, updateFileDescription, ArchiveFile } from '@/actions/archive'
 import { Download, Trash2, Edit2, File, Search, Loader2, Eye } from 'lucide-react'
@@ -125,131 +118,127 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
   }
 
   const getFileTypeColor = (type: string) => {
-    if (type.includes('pdf')) return 'bg-red-100 text-red-800'
-    if (type.includes('excel') || type.includes('spreadsheet')) return 'bg-green-100 text-green-800'
-    if (type.includes('word') || type.includes('document')) return 'bg-blue-100 text-blue-800'
-    if (type.includes('image')) return 'bg-purple-100 text-purple-800'
-    return 'bg-gray-100 text-gray-800'
+    if (type.includes('pdf')) return 'text-red-400'
+    if (type.includes('excel') || type.includes('spreadsheet')) return 'text-emerald-400'
+    if (type.includes('word') || type.includes('document')) return 'text-blue-400'
+    if (type.includes('image')) return 'text-purple-400'
+    return 'text-muted-foreground'
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
+    <div className="surface">
+      <div className="p-4 border-b border-border">
+        <div className="flex justify-between items-start gap-4">
           <div>
-            <CardTitle>Arsip Dokumen</CardTitle>
-            <CardDescription>
+            <h2 className="text-page-title mb-1">Arsip Dokumen</h2>
+            <p className="text-body text-sm">
               {isDireksi ? 'Semua arsip dokumen divisi' : 'Arsip dokumen divisi Anda'}
-            </CardDescription>
+            </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Cari file..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-64"
-              />
-            </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Cari file..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input-clean pl-10 w-64"
+            />
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      
+      <div className="p-4">
         {filteredFiles.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <File className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>Belum ada file di arsip</p>
-            <p className="text-sm">Upload file pertama untuk memulai</p>
+          <div className="text-center py-12">
+            <File className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-50" />
+            <p className="text-body">Belum ada file di arsip</p>
+            <p className="text-meta mt-1">Upload file pertama untuk memulai</p>
           </div>
         ) : (
           <div className="space-y-4">
             {/* Summary Stats */}
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center gap-4 text-meta">
               <span>Total: {filteredFiles.length} file</span>
-              <span>•</span>
+              <span className="text-muted-foreground">•</span>
               <span>
                 Total size: {filteredFiles.reduce((acc, file) => acc + file.file_size, 0).toLocaleString()} bytes
               </span>
             </div>
 
             {/* File Table */}
-            <div className="border rounded-lg">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>File</TableHead>
-                    <TableHead>Ukuran</TableHead>
-                    <TableHead>Diupload oleh</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            <div className="border border-border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-[var(--card)]">
+                    <th className="text-left px-4 py-3 text-section-label font-medium">File</th>
+                    <th className="text-left px-4 py-3 text-section-label font-medium">Ukuran</th>
+                    <th className="text-left px-4 py-3 text-section-label font-medium">Diupload oleh</th>
+                    <th className="text-left px-4 py-3 text-section-label font-medium">Tanggal</th>
+                    <th className="text-right px-4 py-3 text-section-label font-medium">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {filteredFiles.map((file) => (
-                    <TableRow key={file.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <span className="text-xl">{getFileIcon(file.file_type)}</span>
+                    <tr key={file.id} className="border-b border-border hover:bg-[var(--accent)] transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg">{getFileIcon(file.file_type)}</span>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{file.title}</div>
+                            <div className="text-data truncate">{file.title}</div>
                             {editingId === file.id ? (
-                              <div className="flex items-center space-x-2 mt-1">
-                                <Input
+                              <div className="flex items-center gap-2 mt-1">
+                                <input
+                                  type="text"
                                   value={editDescription}
                                   onChange={(e) => setEditDescription(e.target.value)}
                                   placeholder="Tambah deskripsi..."
-                                  className="h-8 text-xs"
+                                  className="input-clean h-8 text-xs"
                                 />
-                                <Button
-                                  size="sm"
+                                <button
                                   onClick={() => handleEditDescription(file.id)}
-                                  className="h-8 px-2"
+                                  className="btn-primary h-8 px-3 text-xs"
                                 >
                                   Simpan
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
+                                </button>
+                                <button
                                   onClick={cancelEdit}
-                                  className="h-8 px-2"
+                                  className="btn-ghost h-8 px-3 text-xs"
                                 >
                                   Batal
-                                </Button>
+                                </button>
                               </div>
                             ) : (
-                              <div className="flex items-center space-x-2">
-                                <p className="text-sm text-gray-500 truncate">
+                              <div className="flex items-center gap-2">
+                                <p className="text-body text-sm truncate">
                                   {file.description || 'Tidak ada deskripsi'}
                                 </p>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
+                                <button
                                   onClick={() => startEdit(file)}
-                                  className="h-6 w-6 p-0"
+                                  className="text-muted-foreground hover:text-foreground transition-colors p-1"
                                 >
                                   <Edit2 className="w-3 h-3" />
-                                </Button>
+                                </button>
                               </div>
                             )}
                           </div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className={getFileTypeColor(file.file_type)}>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="badge-neutral">
                           {formatFileSize(file.file_size)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
                         <div>
-                          <div className="font-medium">{file.users?.full_name}</div>
+                          <div className="text-data">{file.users?.full_name}</div>
                           {isDireksi && file.divisions && (
-                            <div className="text-sm text-gray-500">{file.divisions.name}</div>
+                            <div className="text-meta">{file.divisions.name}</div>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-body text-sm">
                           {new Date(file.created_at).toLocaleDateString('id-ID', {
                             day: 'numeric',
                             month: 'short',
@@ -258,44 +247,41 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
                             minute: '2-digit'
                           })}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
                             onClick={() => handleDownload(file)}
                             disabled={downloadingId === file.id}
+                            className="btn-ghost h-8 px-2"
                           >
                             {downloadingId === file.id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <Download className="w-4 h-4" />
                             )}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
+                          </button>
+                          <button
                             onClick={() => handleDelete(file.id)}
                             disabled={deletingId === file.id}
-                            className="text-red-600 hover:text-red-700"
+                            className="btn-ghost h-8 px-2 text-destructive hover:text-destructive"
                           >
                             {deletingId === file.id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <Trash2 className="w-4 h-4" />
                             )}
-                          </Button>
+                          </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
