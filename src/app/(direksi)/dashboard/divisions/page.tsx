@@ -44,7 +44,7 @@ export default async function DivisionsPage() {
         <CreateDivisionDialog />
       </div>
 
-      <div className="rounded-md border border-slate-800">
+      <div className="rounded-md border border-slate-800 overflow-x-auto">
         <Table>
           <TableHeader className="bg-slate-900/50">
             <TableRow className="border-slate-800 hover:bg-slate-900/50">

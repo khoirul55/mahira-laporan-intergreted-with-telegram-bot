@@ -9,40 +9,69 @@ import {
   FileText, Megaphone, FolderOpen, Menu, X
 } from 'lucide-react'
 
-const navItems = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/divisions', label: 'Divisi', icon: Folders },
-  { href: '/dashboard/laporan', label: 'Pantau Laporan', icon: FileText },
-  { href: '/dashboard/pengumuman', label: 'Pengumuman', icon: Megaphone },
-  { href: '/dashboard/users', label: 'User & Staff', icon: Users },
-  { href: '/dashboard/absences', label: 'Rekap Izin', icon: CalendarDays },
-  { href: '/dashboard/arsip', label: 'Arsip Dokumen', icon: FolderOpen },
+const navGroups = [
+  {
+    title: 'Overview',
+    items: [
+      { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
+    ]
+  },
+  {
+    title: 'Operasional',
+    items: [
+      { href: '/dashboard/laporan', label: 'Pantau Laporan', icon: FileText, exact: false },
+      { href: '/dashboard/absences', label: 'Rekap Izin', icon: CalendarDays, exact: false },
+      { href: '/dashboard/pengumuman', label: 'Pengumuman', icon: Megaphone, exact: false },
+    ]
+  },
+  {
+    title: 'Arsip & Data',
+    items: [
+      { href: '/dashboard/arsip', label: 'Arsip Dokumen', icon: FolderOpen, exact: false },
+    ]
+  },
+  {
+    title: 'Manajemen',
+    items: [
+      { href: '/dashboard/divisions', label: 'Divisi', icon: Folders, exact: false },
+      { href: '/dashboard/users', label: 'User & Staff', icon: Users, exact: false },
+    ]
+  }
 ]
 
 function NavLinks({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <>
-      {navItems.map(({ href, label, icon: Icon, exact }) => {
-        const isActive = exact ? pathname === href : pathname.startsWith(href)
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
-              isActive
-                ? 'bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/20'
-                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-            }`}
-          >
-            <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-emerald-400' : ''}`} />
-            {label}
-          </Link>
-        )
-      })}
-    </>
+    <div className="space-y-4">
+      {navGroups.map((group) => (
+        <div key={group.title}>
+          <h4 className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+            {group.title}
+          </h4>
+          <div className="space-y-0.5">
+            {group.items.map(({ href, label, icon: Icon, exact }) => {
+              const isActive = exact ? pathname === href : pathname.startsWith(href)
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={onClose}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                    isActive
+                      ? 'bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/20'
+                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-emerald-400' : ''}`} />
+                  {label}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
