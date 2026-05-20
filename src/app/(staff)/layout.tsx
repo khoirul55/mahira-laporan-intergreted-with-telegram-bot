@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, FileText, Calendar, FolderOpen } from 'lucide-react'
+import { Home, FileText, Calendar, FolderOpen, User } from 'lucide-react'
 
 const bottomNav = [
   { href: '/beranda', label: 'Beranda', icon: Home, exact: true },
-  { href: '/beranda/laporan', label: 'Laporan', icon: FileText },
-  { href: '/beranda/izin', label: 'Izin', icon: Calendar },
-  { href: '/beranda/arsip', label: 'Arsip', icon: FolderOpen },
+  { href: '/beranda/laporan', label: 'Laporan', icon: FileText, exact: false },
+  { href: '/beranda/izin', label: 'Izin', icon: Calendar, exact: false },
+  { href: '/beranda/arsip', label: 'Arsip', icon: FolderOpen, exact: false },
+  { href: '/beranda/profil', label: 'Profil', icon: User, exact: false },
 ]
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
