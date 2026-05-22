@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Megaphone, FileText, Calendar, FolderOpen, ChevronRight, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
+import { Megaphone, FileText, Calendar, FolderOpen, ChevronRight, CheckCircle2, Clock, AlertCircle, BookOpen } from 'lucide-react'
 import { LogoutButton } from './logout-button'
 
 function getTodayStatus(reports: any[], plans: any[]) {
@@ -30,10 +30,10 @@ export default async function BerandaPage() {
   if (!user) redirect('/login')
 
   const { data: userData } = await supabase
-    .from('users')
-    .select('full_name, role, division:divisions(name)')
-    .eq('id', user.id)
-    .single()
+  .from('users')
+  .select('full_name, role, division:divisions(name)')
+  .eq('id', user.id)
+  .single()
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -66,6 +66,13 @@ export default async function BerandaPage() {
       accent: 'emerald',
     },
     {
+      href: '/beranda/laporan-bulanan',
+      icon: BookOpen,
+      label: 'Laporan Bulanan',
+      desc: 'Rekap otomatis & narasi pencapaian AI Anda',
+      accent: 'amber',
+    },
+    {
       href: '/beranda/izin',
       icon: Calendar,
       label: 'Izin / Absen',
@@ -85,12 +92,14 @@ export default async function BerandaPage() {
     emerald: 'border-emerald-500/20 hover:border-emerald-500/40 group-hover:text-emerald-400',
     blue: 'border-blue-500/20 hover:border-blue-500/40 group-hover:text-blue-400',
     violet: 'border-violet-500/20 hover:border-violet-500/40 group-hover:text-violet-400',
+    amber: 'border-amber-500/20 hover:border-amber-500/40 group-hover:text-amber-400',
   }
 
   const iconColorMap: Record<string, string> = {
     emerald: 'text-emerald-400 bg-emerald-500/10',
     blue: 'text-blue-400 bg-blue-500/10',
     violet: 'text-violet-400 bg-violet-500/10',
+    amber: 'text-amber-400 bg-amber-500/10',
   }
 
   return (

@@ -11,21 +11,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const update = await request.json()
+    const text = update.message?.text || ''
 
-    // Handle /start command - link telegram to user account
-    if (update.message?.text?.startsWith('/start')) {
+    if (text.startsWith('/start')) {
       await handleStartCommand(update.message)
-    }
-
-    // Handle /status command - check today's report status
-    if (update.message?.text?.startsWith('/status')) {
+    } else if (text.startsWith('/status')) {
       await handleStatusCommand(update.message)
+    } else if (text.startsWith('/help')) {
+      await handleHelpCommand(update.message)
+    } else if (text.startsWith('/izin')) {
+      await handleIzinCommand(update.message)
     }
 
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Telegram webhook error:', error)
-    return NextResponse.json({ ok: true }) // Always return 200 to Telegram
+    return NextResponse.json({ ok: true })
   }
 }
 
@@ -110,3 +111,59 @@ async function handleStatusCommand(message: { chat: { id: number }; from: { id: 
     await sendTelegramMessage(chatId, `✅ Halo <b>${user.full_name}</b>,\nLaporan hari ini sudah <b>disubmit</b>. Terima kasih! 🎉`)
   }
 }
+
+async function handleHelpCommand(message: { chat: { id: number } }) {
+  const chatId = message.chat.id.toString()
+  await sendTelegramMessage(chatId, `📖 <b>Daftar Command</b>
+
+/start — Hubungkan akun Telegram
+/status — Cek status laporan hari ini
+/izin — Lihat rekap izin bulan ini
+/help — Tampilkan bantuan ini
+
+💡 Hubungkan akun dulu di halaman Profil website agar bisa gunakan semua fitur.`)
+}
+
+async function handleIzinCommand(message: { chat: { id: number } }) {
+  const chatId = message.chat.id.toString()
+  const supabase = createAdminClient()
+
+  const { data: user } = await supabase
+    .from('users')
+    .select('id, full_name')
+    .eq('telegram_id', chatId)
+    .single()
+
+  if (!user) {
+    await sendTelegramMessage(chatId, '❌ Akun belum terhubung. Hubungkan dulu di halaman Profil website.')
+    return
+  }
+
+  // Get current month absences
+  const now = new Date()
+  const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+  const endOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-31`
+
+  const { data: absences } = await supabase
+    .from('absences')
+    .select('type, absence_date')
+    .eq('user_id', user.id)
+    .gte('absence_date', startOfMonth)
+    .lte('absence_date', endOfMonth)
+
+  if (!absences || absences.length === 0) {
+    await sendTelegramMessage(chatId, `📅 Halo <b>${user.full_name}</b>,\nAnda belum ada izin bulan ini.\n\n➕ <a href="${process.env.NEXT_PUBLIC_APP_URL}/beranda/izin">Ajukan Izin</a>`)
+    return
+  }
+
+  const breakdown: Record<string, number> = {}
+  absences.forEach(a => { breakdown[a.type] = (breakdown[a.type] || 0) + 1 })
+
+  const lines = Object.entries(breakdown).map(([type, count]) => {
+    const label = type === 'sakit' ? '🤒 Sakit' : type === 'cuti' ? '🏖️ Cuti' : type === 'dinas_luar' ? '🚗 Dinas Luar' : '📋 Lainnya'
+    return `${label}: ${count} hari`
+  })
+
+  await sendTelegramMessage(chatId, `📅 <b>Rekap Izin Bulan Ini</b>\n\nHalo <b>${user.full_name}</b>,\n\nTotal: <b>${absences.length} hari</b>\n${lines.join('\n')}\n\n➕ <a href="${process.env.NEXT_PUBLIC_APP_URL}/beranda/izin">Ajukan Izin Baru</a>`)
+}
+

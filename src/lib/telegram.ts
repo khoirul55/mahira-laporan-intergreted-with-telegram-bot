@@ -65,3 +65,20 @@ export function formatWeeklyDigest(data: {
 
 📈 Completion Rate: <b>${data.completionRate}%</b>`
 }
+
+// Format notifikasi submit laporan ke pimpinan
+export function formatSubmitNotification(data: {
+  staffName: string
+  divisionName: string
+  date: string
+  completedTasks: number
+  totalTasks: number
+}): string {
+  return `📤 <b>Laporan Baru Masuk</b>
+
+👤 ${data.staffName} — ${data.divisionName}
+📅 ${data.date}
+✅ ${data.completedTasks}/${data.totalTasks} tugas selesai
+
+📋 <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/laporan">Lihat Detail</a>`
+}

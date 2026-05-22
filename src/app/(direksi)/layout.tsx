@@ -6,7 +6,8 @@ import { useState } from 'react'
 import { LogoutButton } from '../(staff)/beranda/logout-button'
 import {
   LayoutDashboard, Users, Folders, CalendarDays,
-  FileText, Megaphone, FolderOpen, Menu, X
+  FileText, Megaphone, FolderOpen, Menu, X,
+  BookOpen, BarChart3
 } from 'lucide-react'
 
 const navGroups = [
@@ -20,6 +21,7 @@ const navGroups = [
     title: 'Operasional',
     items: [
       { href: '/dashboard/laporan', label: 'Pantau Laporan', icon: FileText, exact: false },
+      { href: '/dashboard/laporan-bulanan', label: 'Lap. Bulanan', icon: BookOpen, exact: false },
       { href: '/dashboard/absences', label: 'Rekap Izin', icon: CalendarDays, exact: false },
       { href: '/dashboard/pengumuman', label: 'Pengumuman', icon: Megaphone, exact: false },
     ]
@@ -28,6 +30,7 @@ const navGroups = [
     title: 'Arsip & Data',
     items: [
       { href: '/dashboard/arsip', label: 'Arsip Dokumen', icon: FolderOpen, exact: false },
+      { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, exact: false },
     ]
   },
   {

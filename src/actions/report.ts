@@ -153,8 +153,60 @@ export async function submitDailyReport(reportId: number, updates: TaskUpdateInp
 
   if (submitError) return { error: submitError.message }
 
+  // Notify direksi via Telegram (non-blocking)
+  notifyDireksiOnSubmit(user.id, reportId).catch(console.error)
+
   revalidatePath('/beranda/laporan')
   return { success: true }
+}
+
+async function notifyDireksiOnSubmit(userId: string, reportId: number) {
+  const { createAdminClient } = await import('@/lib/supabase/admin')
+  const { sendTelegramMessage, formatSubmitNotification } = await import('@/lib/telegram')
+  const supabase = createAdminClient()
+
+  // Get staff info
+  const { data: staff } = await supabase
+    .from('users')
+    .select('full_name, divisions(name)')
+    .eq('id', userId)
+    .single()
+
+  if (!staff) return
+
+  // Get task completion info
+  const { data: report } = await supabase
+    .from('daily_reports')
+    .select('report_date, task_updates(completion_status)')
+    .eq('id', reportId)
+    .single()
+
+  const taskUpdates = (report as Record<string, unknown>)?.task_updates as { completion_status: string }[] | null
+  const totalTasks = taskUpdates?.length || 0
+  const completedTasks = taskUpdates?.filter(t => t.completion_status === 'selesai').length || 0
+
+  // Get all direksi with telegram_id
+  const { data: direksiList } = await supabase
+    .from('users')
+    .select('telegram_id')
+    .eq('role', 'direksi')
+    .eq('is_active', true)
+    .not('telegram_id', 'is', null)
+
+  if (!direksiList || direksiList.length === 0) return
+
+  const division = (staff as Record<string, unknown>).divisions as { name: string } | null
+  const message = formatSubmitNotification({
+    staffName: staff.full_name,
+    divisionName: division?.name || '-',
+    date: report?.report_date || new Date().toISOString().split('T')[0],
+    completedTasks,
+    totalTasks,
+  })
+
+  await Promise.allSettled(
+    direksiList.map(d => sendTelegramMessage(d.telegram_id!, message))
+  )
 }
 
 export async function addDireksiNotes(reportId: number, notes: string) {

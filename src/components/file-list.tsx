@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { downloadArchiveFile, deleteArchiveFile, updateFileDescription, ArchiveFile } from '@/actions/archive'
-import { Download, Trash2, Edit2, File, Search, Loader2, Eye } from 'lucide-react'
+import { downloadArchiveFile, deleteArchiveFile, updateFileDescription, togglePinDocument, ArchiveFile } from '@/actions/archive'
+import { Download, Trash2, Edit2, File, Search, Loader2, Eye, Pin } from 'lucide-react'
 
 interface FileListProps {
   files: ArchiveFile[]
@@ -18,6 +18,24 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editDescription, setEditDescription] = useState('')
+  const [togglingPinId, setTogglingPinId] = useState<number | null>(null)
+
+  const handleTogglePin = async (fileId: number) => {
+    setTogglingPinId(fileId)
+    try {
+      const result = await togglePinDocument(fileId)
+      if (result.error) {
+        toast.error(result.error)
+      } else {
+        toast.success(result.message)
+        onFileUpdated?.()
+      }
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat menyematkan dokumen')
+    } finally {
+      setTogglingPinId(null)
+    }
+  }
 
   // Filter files based on search
   const filteredFiles = files.filter(file =>
@@ -180,12 +198,24 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
                 </thead>
                 <tbody>
                   {filteredFiles.map((file) => (
-                    <tr key={file.id} className="border-b border-border hover:bg-[var(--accent)] transition-colors">
+                    <tr 
+                      key={file.id} 
+                      className={`border-b border-border hover:bg-[var(--accent)] transition-all duration-200 ${
+                        file.is_pinned ? 'bg-emerald-500/[0.02] border-l-2 border-l-emerald-500' : ''
+                      }`}
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <span className="text-lg">{getFileIcon(file.file_type)}</span>
                           <div className="flex-1 min-w-0">
-                            <div className="text-data truncate">{file.title}</div>
+                            <div className="text-data truncate flex items-center gap-1.5">
+                              {file.title}
+                              {file.is_pinned && (
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">
+                                  📌 Pinned
+                                </span>
+                              )}
+                            </div>
                             {editingId === file.id ? (
                               <div className="flex items-center gap-2 mt-1">
                                 <input
@@ -250,6 +280,22 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {isDireksi && (
+                            <button
+                              onClick={() => handleTogglePin(file.id)}
+                              disabled={togglingPinId === file.id}
+                              className={`btn-ghost h-8 px-2 transition-colors ${
+                                file.is_pinned ? 'text-emerald-400 hover:text-emerald-500' : 'text-muted-foreground hover:text-foreground'
+                              }`}
+                              title={file.is_pinned ? 'Lepas Sematan' : 'Sematkan Dokumen'}
+                            >
+                              {togglingPinId === file.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Pin className={`w-4 h-4 ${file.is_pinned ? 'fill-current text-emerald-400' : ''}`} />
+                              )}
+                            </button>
+                          )}
                           <button
                             onClick={() => handleDownload(file)}
                             disabled={downloadingId === file.id}

@@ -129,6 +129,7 @@ export async function getDivisionFiles() {
         users!uploaded_by(full_name)
       `)
       .eq('division_id', userData.division_id)
+      .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -159,6 +160,7 @@ export async function getAllFiles(divisionId?: number) {
         divisions(name),
         users!uploaded_by(full_name)
       `)
+      .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
 
     if (divisionId) {
@@ -304,5 +306,58 @@ export async function getDivisions() {
 
   } catch (error) {
     return { error: 'Terjadi kesalahan saat mengambil data divisi' }
+  }
+}
+
+// Toggle pin document (hanya untuk direksi)
+export async function togglePinDocument(fileId: number) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  try {
+    // Check if user is direksi
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (userData?.role !== 'direksi') {
+      return { error: 'Hanya pimpinan yang dapat menyematkan dokumen' }
+    }
+
+    // Get current status
+    const { data: fileData, error: fetchError } = await supabase
+      .from('division_documents')
+      .select('is_pinned')
+      .eq('id', fileId)
+      .single()
+
+    if (fetchError) {
+      return { error: fetchError.message }
+    }
+
+    const { error } = await supabase
+      .from('division_documents')
+      .update({ is_pinned: !fileData.is_pinned })
+      .eq('id', fileId)
+
+    if (error) {
+      return { error: error.message }
+    }
+
+    revalidatePath('/beranda/arsip')
+    revalidatePath('/dashboard/arsip')
+
+    return { 
+      success: true, 
+      message: fileData.is_pinned ? 'Dokumen dilepas dari sematan' : 'Dokumen berhasil disematkan' 
+    }
+  } catch (error) {
+    return { error: 'Terjadi kesalahan saat mengubah status sematan' }
   }
 }
