@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTelegramMessage, formatWeeklyDigest } from '@/lib/telegram'
 import { generateWeeklyDigestNarrative, type WeeklyDigestData } from '@/lib/gemini'
+import { startOfWeek, subWeeks, addDays } from 'date-fns'
 
 export async function GET(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret')
@@ -12,14 +13,11 @@ export async function GET(request: NextRequest) {
   const supabase = createAdminClient()
 
   // Calculate last week's date range (Monday to Friday)
-  const now = new Date()
-  const lastMonday = new Date(now)
-  lastMonday.setDate(now.getDate() - now.getDay() - 6) // Previous Monday
-  const lastFriday = new Date(lastMonday)
-  lastFriday.setDate(lastMonday.getDate() + 4)
+  const lastMonday = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 1 })
+  const lastFriday = addDays(lastMonday, 4)
 
-  const startDate = lastMonday.toISOString().split('T')[0]
-  const endDate = lastFriday.toISOString().split('T')[0]
+  const startDate = lastMonday.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' })
+  const endDate = lastFriday.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' })
   const period = `${startDate} s/d ${endDate}`
 
   // Get all active staff

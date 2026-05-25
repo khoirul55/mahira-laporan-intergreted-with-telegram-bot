@@ -25,30 +25,25 @@ export default function LoginPage() {
       {/* Brand */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-6">
-          <div style={{
-            width: 28, height: 28, borderRadius: 6,
-            backgroundColor: 'rgba(16,185,129,0.15)',
-            border: '1px solid rgba(16,185,129,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#10b981' }} />
+          <div className="w-7 h-7 rounded-md bg-primary/15 border border-primary/20 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-primary" />
           </div>
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#e8e6e3' }}>Mahira Tour</span>
+          <span className="text-sm font-semibold text-foreground">Mahira Tour</span>
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: '#e8e6e3', letterSpacing: '-0.02em', marginBottom: 6 }}>
+        <h1 className="text-[22px] font-semibold text-foreground tracking-[-0.02em] mb-1.5">
           Selamat datang
         </h1>
-        <p style={{ fontSize: 14, color: '#737068', lineHeight: 1.5 }}>
+        <p className="text-sm text-muted-foreground leading-relaxed">
           Masuk menggunakan akun yang telah didaftarkan.
         </p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 16 }}>
+        <div className="mb-4">
           <label
             htmlFor="email"
-            style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#b5b3af', marginBottom: 6 }}
+            className="block text-[13px] font-medium text-secondary-foreground mb-1.5"
           >
             Email
           </label>
@@ -63,10 +58,10 @@ export default function LoginPage() {
           />
         </div>
 
-        <div style={{ marginBottom: 24 }}>
+        <div className="mb-6">
           <label
             htmlFor="password"
-            style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#b5b3af', marginBottom: 6 }}
+            className="block text-[13px] font-medium text-secondary-foreground mb-1.5"
           >
             Password
           </label>
@@ -82,20 +77,12 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div style={{
-            padding: '10px 12px',
-            marginBottom: 16,
-            backgroundColor: 'rgba(224,82,82,0.08)',
-            border: '1px solid rgba(224,82,82,0.2)',
-            borderRadius: 6,
-            fontSize: 13,
-            color: '#e05252',
-          }}>
+          <div className="px-3 py-2.5 mb-4 bg-destructive/10 border border-destructive/20 rounded-md text-[13px] text-destructive">
             {error}
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%' }}>
+        <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? (
             <>
               <Loader2 size={14} className="animate-spin" />
@@ -107,7 +94,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p style={{ marginTop: 32, fontSize: 12, color: '#444240', textAlign: 'center' }}>
+      <p className="mt-8 text-xs text-muted-foreground text-center">
         Sistem internal Mahira Tour · Akses terbatas
       </p>
     </div>

@@ -1,4 +1,4 @@
-# 📊 Progress Sistem Mahira Tour — Update 20 Mei 2026
+# 📊 Progress Sistem Mahira Tour — Update 23 Mei 2026
 
 > **Project**: Integrated Reporting System with Telegram Bot  
 > **Stack**: Next.js 16 + Supabase + shadcn/ui + TailwindCSS  
@@ -20,14 +20,16 @@
 ### Telegram Bot
 - **Nama Bot**: Mahira Tour Reporter
 - **Username**: `@mahiratour_bot`
-- **Bot Token**: `8130887626:AAF2QZxWFLDgICxKc2N_5PQe5ZHsI87nrPg`
-- **Webhook Secret**: `mahira-tour-secret-2026`
+- **Bot Token**: `[REDACTED]`
+- **Webhook Secret**: `[REDACTED]`
 - **Webhook URL**: `https://mahira-laporan-intergreted-with-tel.vercel.app/api/telegram/webhook`
-- **Set Webhook**: `https://mahira-laporan-intergreted-with-tel.vercel.app/api/telegram/setup?action=set&secret=mahira-tour-secret-2026`
+- **Set Webhook**: `https://mahira-laporan-intergreted-with-tel.vercel.app/api/telegram/setup?action=set&secret=[REDACTED]`
 
 ### Cron Job (cron-job.org)
 - **Daily Reminder**: Setiap hari jam 15:55 WIB
-- **URL**: `https://mahira-laporan-intergreted-with-tel.vercel.app/api/telegram/reminder?secret=mahira-tour-secret-2026`
+- **Weekly Digest**: Setiap Senin jam 08:00 WIB
+- **Keep-alive**: Setiap hari jam 06:00 WIB
+- **URL Reminder**: `https://mahira-laporan-intergreted-with-tel.vercel.app/api/telegram/reminder?secret=[REDACTED]`
 
 ### Environment Variables (Vercel)
 | Key | Keterangan |
@@ -39,99 +41,107 @@
 | `TELEGRAM_WEBHOOK_SECRET` | Secret buatan sendiri untuk auth |
 | `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | `mahiratour_bot` |
 | `NEXT_PUBLIC_APP_URL` | URL production Vercel |
+| `GEMINI_API_KEY` | Google Gemini AI API key |
 
 ---
 
 ## ✅ FITUR YANG SUDAH SELESAI
 
-### 1. Fondasi Sistem & Keamanan
-- Setup Next.js 16 (App Router) & TailwindCSS (shadcn/ui)
-- Integrasi database Supabase PostgreSQL
-- Row Level Security (RLS) untuk keamanan data
-- Deploy ke Vercel (auto-deploy dari GitHub)
+### Fase 0 — Fondasi Sistem & Keamanan
+- [x] Setup Next.js 16 (App Router) & TailwindCSS (shadcn/ui)
+- [x] Integrasi database Supabase PostgreSQL
+- [x] Row Level Security (RLS) untuk keamanan data
+- [x] Deploy ke Vercel (auto-deploy dari GitHub)
+- [x] Komponen UI reusable: `stat-card`, `progress-bar`, `ai-generate-button`, `responsive-table`
+- [x] Helper `src/lib/gemini.ts` — koneksi Google Gemini AI
 
-### 2. Otentikasi & Akses Kontrol
-- Login menggunakan Supabase Auth
-- Middleware Auth Guard — pemisahan `/dashboard` (Direksi) dan `/beranda` (Staff)
+### Fase 0 — Otentikasi & Akses Kontrol
+- [x] Login menggunakan Supabase Auth
+- [x] Middleware Auth Guard — pemisahan `/dashboard` (Direksi) dan `/beranda` (Staff)
 
-### 3. Manajemen Perusahaan (Dashboard Pimpinan)
-- CRUD Divisi (tambah, edit, hapus)
-- CRUD Staff (register, ubah divisi/role, nonaktifkan)
-- Overview Dashboard dengan statistik real-time
+### Fase 0 — Manajemen Perusahaan (Dashboard Pimpinan)
+- [x] CRUD Divisi (tambah, edit, hapus)
+- [x] CRUD Staff (register, ubah divisi/role, nonaktifkan)
+- [x] Overview Dashboard dengan statistik real-time
 
-### 4. Sistem Absensi / Izin
-- Staff ajukan izin (Sakit, Cuti, Dinas Luar)
-- Halaman Rekap Izin untuk pimpinan
+### Fase 0 — Sistem Absensi / Izin
+- [x] Staff ajukan izin (Sakit, Cuti, Dinas Luar)
+- [x] Halaman Rekap Izin untuk pimpinan
 
-### 5. CORE: Laporan Harian
-- **Skenario Pagi**: Staff input rencana kerja
-- **Skenario Sore**: Staff update status tugas & submit
-- **Sistem Kunci**: Terkunci otomatis setelah submit / jika izin
-- **Pantau Laporan**: Pimpinan lihat status semua staff
-- **Detail & Feedback**: Direksi baca detail + tinggalkan catatan
-- **Upload Bukti Foto**: Staff upload foto ke Supabase Storage
+### Fase 0 — CORE: Laporan Harian
+- [x] **Skenario Pagi**: Staff input rencana kerja
+- [x] **Skenario Sore**: Staff update status tugas & submit
+- [x] **Sistem Kunci**: Terkunci otomatis setelah submit / jika izin
+- [x] **Pantau Laporan**: Pimpinan lihat status semua staff
+- [x] **Detail & Feedback**: Direksi baca detail + tinggalkan catatan
+- [x] **Upload Bukti Foto**: Staff upload foto ke Supabase Storage
 
-### 6. Papan Pengumuman
-- Pimpinan buat pengumuman broadcast
-- Tampil di Beranda Staff
+### Fase 0 — Papan Pengumuman & Arsip
+- [x] Pimpinan buat pengumuman broadcast, tampil di Beranda Staff
+- [x] Upload/download file per divisi (PDF, Excel, Word, gambar)
+- [x] Server actions: upload, download, delete, update
 
-### 7. Arsip Dokumen Divisi
-- Upload/download file per divisi (PDF, Excel, Word, gambar)
-- Staff akses arsip divisi sendiri
-- Direksi akses semua arsip
-- Server actions: upload, download, delete, update
+### Fase 0 — Pencarian & Filter
+- [x] SearchBar universal component
+- [x] Riwayat laporan staff & direksi
+- [x] Filter by tanggal, status, divisi, keyword
+- [x] Export CSV
 
-### 8. Pencarian & Filter
-- SearchBar universal component
-- Riwayat laporan staff & direksi
-- Filter by tanggal, status, divisi, keyword
-- Export CSV
+### Fase 0 — UX/UI Dasar
+- [x] Loading spinners (`loading.tsx`)
+- [x] Badge warna untuk prioritas & status
+- [x] Responsive design (mobile-first)
+- [x] Sidebar navigasi per role
 
-### 9. Telegram Bot Integration ✨ (Baru - 20 Mei 2026)
-- Bot aktif: `@mahiratour_bot`
-- Command `/start` — link akun Telegram ke website
-- Command `/status` — cek status laporan hari ini
-- **Daily Reminder otomatis** jam 15:55 WIB (via cron-job.org)
-- Halaman Profil Staff + tombol "Hubungkan Telegram"
-- API endpoints:
-  - `POST /api/telegram/webhook` — handle commands
-  - `GET /api/telegram/reminder` — trigger reminder
-  - `GET /api/telegram/setup` — set/delete webhook
+### Fase 1 — Telegram Bot Integration ✨
+- [x] Bot aktif: `@mahiratour_bot`
+- [x] Command `/start` — link akun Telegram ke website
+- [x] Command `/status` — cek status laporan hari ini
+- [x] Command `/help` — panduan perintah bot
+- [x] Command `/izin` — cek rekap absen bulan ini
+- [x] **Daily Reminder otomatis** jam 15:55 WIB (via cron-job.org)
+- [x] **Notifikasi Submit Real-time** — kirim pesan ke Direksi saat staff submit laporan
+- [x] **Weekly Digest AI** — ringkasan mingguan ke Direksi tiap Senin (Gemini AI)
+- [x] Halaman Profil Staff + tombol "Hubungkan Telegram"
 
-### 10. UX/UI
-- Loading spinners (`loading.tsx`)
-- Badge warna untuk prioritas & status
-- Responsive design (mobile-first)
-- Sidebar navigasi per role
+### Fase 2 — Laporan Bulanan Staff & Review Direksi
+- [x] Kalkulasi otomatis hari kerja, absen, penyelesaian tugas
+- [x] AI Gemini generate draf Pencapaian Utama & Tantangan
+- [x] Tinjauan Kepatuhan (Direksi) — persentase keaktifan per bulan
+- [x] Detail Review Laporan Bulanan individu staff
+
+### Fase 3 — Pin Dokumen & Error Boundaries
+- [x] Pin/Sematkan Berkas eksklusif Direksi (badge 📌, border emerald)
+- [x] Error Boundaries: `error.tsx` di Beranda Staff & Dashboard Direksi
+- [x] `global-error.tsx` pada tingkat root
+- [x] Supabase Keep-alive endpoint `/api/keep-alive`
+
+### Fase 4 — Analytics Dashboard & AI Feedback
+- [x] Dashboard Analytics: grafik tren mingguan CSS murni, leaderboard, statistik divisi
+- [x] Panel ringkasan otomatis bertenaga AI Gemini
+- [x] AI Feedback Suggestion pada form koreksi laporan harian
+
+### Fase 5 — Deploy & Verifikasi Produksi
+- [x] Build sukses 100% (Turbopack) tanpa error
+- [x] Vercel deploy berhasil dari branch `main`
+- [x] Cron-job.org dikonfigurasi: Weekly Digest (Senin 08:00), Keep-alive (harian 06:00)
 
 ---
 
 ## 🚧 BELUM DIKERJAKAN
 
-### Prioritas Tinggi
-- [ ] **Testing end-to-end** — test semua fitur di production
-- [ ] **Test Telegram Bot** — link akun staff, test /status, test reminder
-- [ ] **Weekly Digest** — ringkasan mingguan ke pimpinan tiap Senin
-- [ ] **Notifikasi submit** — pimpinan terima notif saat staff submit laporan
-
-### Prioritas Sedang
-- [ ] **Laporan Bulanan** — auto-recap dari data harian + narasi manual
-- [ ] **Pin Dokumen Penting** — tandai dokumen penting di arsip
-- [ ] **Error Boundaries** — graceful error handling
-- [ ] **Cron keep-alive Supabase** — ping setiap 3 hari
-
-### Prioritas Rendah (Bonus)
-- [ ] Advanced analytics & reporting
-- [ ] Command Telegram tambahan (`/help`, `/izin`)
-- [ ] Mobile app (React Native)
-
 ### Wajib Sebelum 15 Juni
+- [ ] **UI/UX Polishing** — perbaikan tampilan visual (mobile + desktop)
+- [ ] **Testing end-to-end** — test semua fitur di production
 - [ ] **User Guide** — panduan penggunaan untuk staff & pimpinan
 - [ ] **Dokumentasi Teknis** — arsitektur, API, deployment
 - [ ] **Laporan Akhir Magang** — rangkuman project & kontribusi
 - [ ] **Presentasi / Demo** — slide + demo skenario
 - [ ] **Code cleanup** — hapus console.log, file test
 - [ ] **Serah terima** — handover ke tim/pembimbing
+
+### Nice-to-Have
+- [ ] Mobile app (React Native)
 
 ---
 
@@ -144,6 +154,7 @@ src/
 │   ├── (staff)/beranda/
 │   │   ├── page.tsx               ← Beranda + pengumuman
 │   │   ├── laporan/               ← Input & update laporan
+│   │   ├── laporan-bulanan/       ← Laporan bulanan + AI
 │   │   ├── izin/                  ← Ajukan izin
 │   │   ├── arsip/                 ← Arsip dokumen divisi
 │   │   ├── riwayat/               ← Riwayat laporan
@@ -151,20 +162,27 @@ src/
 │   ├── (direksi)/dashboard/
 │   │   ├── page.tsx               ← Overview dashboard
 │   │   ├── laporan/               ← Pantau laporan + detail
+│   │   ├── laporan-bulanan/       ← Review laporan bulanan
 │   │   ├── absences/              ← Rekap izin
 │   │   ├── pengumuman/            ← CRUD pengumuman
 │   │   ├── arsip/                 ← Arsip semua divisi
+│   │   ├── analytics/             ← Dashboard analytics + AI
 │   │   ├── riwayat/               ← Search & filter laporan
 │   │   ├── divisions/             ← CRUD divisi
 │   │   └── users/                 ← CRUD staff
-│   └── api/telegram/
-│       ├── webhook/route.ts       ← Handle /start & /status
-│       ├── reminder/route.ts      ← Daily reminder endpoint
-│       └── setup/route.ts         ← Set/delete webhook
+│   └── api/
+│       ├── telegram/
+│       │   ├── webhook/route.ts   ← Handle commands
+│       │   ├── reminder/route.ts  ← Daily reminder
+│       │   ├── weekly-digest/route.ts ← Weekly digest AI
+│       │   └── setup/route.ts     ← Set/delete webhook
+│       └── keep-alive/route.ts    ← Supabase keep-alive
 ├── actions/                       ← Server actions
-├── components/                    ← UI components
+├── components/
+│   └── ui/                        ← stat-card, progress-bar, ai-generate-button, responsive-table
 └── lib/
     ├── supabase/                  ← Supabase clients
+    ├── gemini.ts                  ← Google Gemini AI helper
     ├── telegram.ts                ← Telegram helper
     ├── types.ts                   ← TypeScript types
     └── utils.ts                   ← Utilities

@@ -12,6 +12,11 @@ export interface SearchFilters {
   file_type?: string
 }
 
+// Escape karakter khusus untuk PostgREST ilike filter
+function escapeSearch(input: string): string {
+  return input.replace(/[%_\\]/g, '\\$&')
+}
+
 // Search daily reports untuk staff
 export async function searchReports(filters: SearchFilters, userId?: string) {
   const supabase = await createClient()
@@ -38,12 +43,10 @@ export async function searchReports(filters: SearchFilters, userId?: string) {
       query = query.eq('user_id', userId)
     }
 
-    // Apply search filter
+    // Apply search filter (search via user name since plan_notes/notes don't exist on daily_reports)
     if (filters.search) {
-      query = query.or(`
-        plan_notes.ilike.%${filters.search}%,
-        notes.ilike.%${filters.search}%
-      `)
+      const escaped = escapeSearch(filters.search)
+      query = query.or(`users.full_name.ilike.%${escaped}%`)
     }
 
     // Apply date range filter
@@ -84,10 +87,10 @@ export async function searchReports(filters: SearchFilters, userId?: string) {
       }
 
       if (startDate) {
-        query = query.gte('report_date', startDate.toISOString().split('T')[0])
+        query = query.gte('report_date', startDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
       }
       if (endDate) {
-        query = query.lte('report_date', endDate.toISOString().split('T')[0])
+        query = query.lte('report_date', endDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
       }
     }
 
@@ -137,12 +140,8 @@ export async function searchAllReports(filters: SearchFilters) {
 
     // Apply search filter
     if (filters.search) {
-      query = query.or(`
-        plan_notes.ilike.%${filters.search}%,
-        notes.ilike.%${filters.search}%,
-        users.full_name.ilike.%${filters.search}%,
-        users.divisions.name.ilike.%${filters.search}%
-      `)
+      const escaped = escapeSearch(filters.search)
+      query = query.or(`users.full_name.ilike.%${escaped}%`)
     }
 
     // Apply date range filter (sama seperti di atas)
@@ -183,10 +182,10 @@ export async function searchAllReports(filters: SearchFilters) {
       }
 
       if (startDate) {
-        query = query.gte('report_date', startDate.toISOString().split('T')[0])
+        query = query.gte('report_date', startDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
       }
       if (endDate) {
-        query = query.lte('report_date', endDate.toISOString().split('T')[0])
+        query = query.lte('report_date', endDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
       }
     }
 
@@ -198,9 +197,9 @@ export async function searchAllReports(filters: SearchFilters) {
       query = query.lte('report_date', filters.date_to)
     }
 
-    // Division filter
+    // Division filter (use direct column, not nested relation)
     if (filters.division_id && filters.division_id !== 'all') {
-      query = query.eq('users.division_id', parseInt(filters.division_id))
+      query = query.eq('division_id', parseInt(filters.division_id))
     }
 
     // Status filter
@@ -221,7 +220,7 @@ export async function searchAllReports(filters: SearchFilters) {
   }
 }
 
-// Export to CSV functionality
+// Export CSV — server action hanya return CSV string, download dilakukan di client
 export async function exportReportsToCSV(filters: SearchFilters, isDireksi = false) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -231,7 +230,6 @@ export async function exportReportsToCSV(filters: SearchFilters, isDireksi = fal
   }
 
   try {
-    // Get data based on role
     const result = isDireksi 
       ? await searchAllReports(filters)
       : await searchReports(filters)
@@ -242,16 +240,12 @@ export async function exportReportsToCSV(filters: SearchFilters, isDireksi = fal
 
     const reports = result.data
 
-    // Create CSV content
     const headers = [
       'Tanggal',
       'Nama Staff',
       'Divisi',
       'Status',
-      'Rencana Kerja',
-      'Catatan Sore',
       'Feedback Direksi',
-      'Dibuat Pada'
     ]
 
     const csvContent = [
@@ -261,27 +255,12 @@ export async function exportReportsToCSV(filters: SearchFilters, isDireksi = fal
         `"${report.users?.full_name || ''}"`,
         `"${report.users?.divisions?.name || ''}"`,
         report.status,
-        `"${(report.plan_notes || '').replace(/"/g, '""')}"`,
-        `"${(report.notes || '').replace(/"/g, '""')}"`,
         `"${(report.direksi_notes || '').replace(/"/g, '""')}"`,
-        report.created_at
       ].join(','))
     ].join('\n')
 
-    // Create blob and download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', `laporan_${new Date().toISOString().split('T')[0]}.csv`)
-    link.style.visibility = 'hidden'
-    
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    return { success: true, message: 'CSV berhasil diunduh' }
+    // Return CSV string — client handles download
+    return { success: true, data: csvContent }
 
   } catch (error) {
     return { error: 'Terjadi kesalahan saat export CSV' }
@@ -334,10 +313,8 @@ export async function getSearchStats(filters: SearchFilters, isDireksi = false) 
     }
 
     if (filters.search) {
-      query = query.or(`
-        plan_notes.ilike.%${filters.search}%,
-        notes.ilike.%${filters.search}%
-      `)
+      const escaped = escapeSearch(filters.search)
+      query = query.or(`users.full_name.ilike.%${escaped}%`)
     }
 
     // Apply date filters (simplified for stats)
@@ -349,7 +326,7 @@ export async function getSearchStats(filters: SearchFilters, isDireksi = false) 
     }
 
     if (filters.division_id && filters.division_id !== 'all' && isDireksi) {
-      query = query.eq('users.division_id', parseInt(filters.division_id))
+      query = query.eq('division_id', parseInt(filters.division_id))
     }
 
     if (filters.status && filters.status !== 'all') {

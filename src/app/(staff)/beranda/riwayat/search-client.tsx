@@ -16,8 +16,6 @@ interface Report {
   id: number
   report_date: string
   status: string
-  plan_notes: string
-  notes: string
   direksi_notes: string
   created_at: string
 }
@@ -81,8 +79,13 @@ export default function SearchClient({ initialReports, initialStats }: SearchCli
       const result = await exportReportsToCSV({ ...filters, search: searchQuery })
       if (result.error) {
         toast.error(result.error)
-      } else {
-        toast.success(result.message)
+      } else if (result.data) {
+        const blob = new Blob([result.data], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = `laporan_${new Date().toISOString().split('T')[0]}.csv`
+        link.click()
+        toast.success('CSV berhasil diunduh')
       }
     } catch (error) {
       toast.error('Terjadi kesalahan saat export')
@@ -231,8 +234,6 @@ export default function SearchClient({ initialReports, initialStats }: SearchCli
                   <TableRow>
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Rencana Kerja</TableHead>
-                    <TableHead>Catatan Sore</TableHead>
                     <TableHead>Feedback</TableHead>
                     <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
@@ -255,16 +256,6 @@ export default function SearchClient({ initialReports, initialStats }: SearchCli
                       </TableCell>
                       <TableCell>
                         {getStatusBadge(report.status)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-xs truncate" title={report.plan_notes}>
-                          {report.plan_notes || '-'}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-xs truncate" title={report.notes}>
-                          {report.notes || '-'}
-                        </div>
                       </TableCell>
                       <TableCell>
                         {report.direksi_notes ? (
