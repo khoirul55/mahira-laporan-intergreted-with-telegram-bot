@@ -10,7 +10,7 @@ export function LogoutButton() {
         type="submit"
         variant="outline"
         size="sm"
-        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+        className="border-border text-secondary-foreground hover:bg-muted"
       >
         Keluar
       </Button>

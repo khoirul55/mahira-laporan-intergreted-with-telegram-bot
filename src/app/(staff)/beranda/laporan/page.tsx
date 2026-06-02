@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, AlertCircle, FileCheck2, ShieldAlert, MessageSquare } from 'lucide-react'
+import { getTodayWIB } from '@/lib/utils'
 import { CreatePlanForm, UpdateReportForm } from './report-forms'
 import { Badge } from '@/components/ui/badge'
 
@@ -11,7 +12,7 @@ export default async function LaporanPage() {
 
   if (!user) redirect('/login')
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
 
   // 1. Cek apakah hari ini sedang izin Sakit / Cuti
   const { data: izinHariIni } = await supabase
@@ -24,13 +25,13 @@ export default async function LaporanPage() {
 
   if (izinHariIni) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-6">
+      <div className="min-h-screen bg-background text-foreground p-6">
         <div className="max-w-3xl mx-auto space-y-8">
           <Header />
-          <div className="p-8 text-center bg-slate-900 border border-amber-500/20 rounded-xl">
+          <div className="p-8 text-center bg-card border border-amber-500/20 rounded-xl">
             <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-amber-400">Form Laporan Terkunci</h2>
-            <p className="text-slate-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Anda tercatat sedang mengambil izin <b>{izinHariIni.type.toUpperCase()}</b> hari ini. 
               Selamat beristirahat, tidak perlu mengisi laporan harian.
             </p>
@@ -52,7 +53,7 @@ export default async function LaporanPage() {
   if (overdueReports && overdueReports.length > 0) {
     const overdue = overdueReports[0]
     return (
-      <div className="min-h-screen bg-slate-950 text-white p-6">
+      <div className="min-h-screen bg-background text-foreground p-6">
         <div className="max-w-3xl mx-auto space-y-8">
           <Header />
           <div className="p-6 bg-rose-950/20 border border-rose-500/20 rounded-xl mb-6">
@@ -82,7 +83,7 @@ export default async function LaporanPage() {
     .single()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
+    <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-3xl mx-auto space-y-8">
         <Header />
 
@@ -91,7 +92,7 @@ export default async function LaporanPage() {
           <div>
             <div className="mb-6">
               <h2 className="text-xl font-bold">1. Rencana Kerja Pagi 🌅</h2>
-              <p className="text-slate-400 text-sm mt-1">Masukkan target pekerjaan yang akan Anda selesaikan hari ini.</p>
+              <p className="text-muted-foreground text-sm mt-1">Masukkan target pekerjaan yang akan Anda selesaikan hari ini.</p>
             </div>
             <CreatePlanForm />
           </div>
@@ -100,7 +101,7 @@ export default async function LaporanPage() {
           <div>
             <div className="mb-6">
               <h2 className="text-xl font-bold">2. Laporan Akhir Hari 🌇</h2>
-              <p className="text-slate-400 text-sm mt-1">Tandai status penyelesaian dari target Anda tadi pagi.</p>
+              <p className="text-muted-foreground text-sm mt-1">Tandai status penyelesaian dari target Anda tadi pagi.</p>
             </div>
             <UpdateReportForm report={todayReport} updates={todayReport.task_updates} />
           </div>
@@ -110,18 +111,18 @@ export default async function LaporanPage() {
             <div className="p-8 text-center bg-emerald-950/20 border border-emerald-500/20 rounded-xl mb-8">
               <FileCheck2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-emerald-400">Laporan Telah Disubmit</h2>
-              <p className="text-slate-400 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Terima kasih atas kerja keras Anda hari ini! Laporan Anda sudah tercatat dan dapat dilihat oleh Pimpinan.
               </p>
             </div>
 
-              <h3 className="font-bold text-slate-300 mb-4">Ringkasan Hari Ini:</h3>
+              <h3 className="font-bold text-foreground/80 mb-4">Ringkasan Hari Ini:</h3>
               <div className="space-y-4">
               {todayReport.task_updates.map((update: any, idx: number) => (
-                <div key={update.id} className="p-4 rounded-xl border border-slate-800 bg-slate-900/50 flex flex-col md:flex-row gap-4">
+                <div key={update.id} className="p-4 rounded-xl border border-border bg-card flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
-                    <h4 className="font-medium text-slate-200">{update.plan_task.title}</h4>
-                    {update.notes && <p className="text-sm text-slate-400 mt-1 italic">"{update.notes}"</p>}
+                    <h4 className="font-medium text-foreground">{update.plan_task.title}</h4>
+                    {update.notes && <p className="text-sm text-muted-foreground mt-1 italic">"{update.notes}"</p>}
                   </div>
                   <div>
                     <Badge variant="outline" className={
@@ -137,26 +138,26 @@ export default async function LaporanPage() {
               </div>
 
               {todayReport.evidence_url && (
-                <div className="mt-6 p-4 rounded-xl border border-slate-800 bg-slate-900/50">
-                  <h4 className="font-medium text-slate-300 mb-3 flex items-center gap-2">
+                <div className="mt-6 p-4 rounded-xl border border-border bg-card">
+                  <h4 className="font-medium text-foreground/80 mb-3 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" /> Bukti Foto Laporan
                   </h4>
                   <img 
                     src={todayReport.evidence_url} 
                     alt="Bukti Laporan" 
-                    className="max-w-full md:max-w-md rounded-lg border border-slate-700"
+                    className="max-w-full md:max-w-md rounded-lg border border-border"
                   />
                 </div>
               )}
 
             {todayReport.direksi_notes && (
-              <div className="mt-8 p-6 bg-slate-900 border border-emerald-500/30 rounded-xl relative overflow-hidden">
+              <div className="mt-8 p-6 bg-card border border-emerald-500/30 rounded-xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                 <h3 className="font-bold text-emerald-400 mb-2 flex items-center gap-2">
                   <MessageSquare className="w-5 h-5" />
                   Feedback Pimpinan
                 </h3>
-                <p className="text-slate-300 whitespace-pre-wrap">{todayReport.direksi_notes}</p>
+                <p className="text-foreground/80 whitespace-pre-wrap">{todayReport.direksi_notes}</p>
               </div>
             )}
           </div>
@@ -175,7 +176,7 @@ function Header() {
         Kembali ke Beranda
       </Link>
       <h1 className="text-3xl font-bold">Laporan Harian</h1>
-      <p className="text-slate-400 text-sm mt-1">
+      <p className="text-muted-foreground text-sm mt-1">
         Dokumentasikan rencana dan capaian kerja Anda setiap hari.
       </p>
     </div>

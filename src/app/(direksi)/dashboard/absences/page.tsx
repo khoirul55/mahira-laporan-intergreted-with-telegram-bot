@@ -43,47 +43,47 @@ export default async function AbsencesPage() {
     <div className="p-6 md:p-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Rekap Ketidakhadiran (Izin)</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-secondary-foreground text-sm mt-1">
           Pantau daftar izin sakit, cuti, atau dinas luar dari seluruh staff.
         </p>
       </div>
 
-      <div className="rounded-md border border-slate-800 overflow-x-auto">
+      <div className="rounded-md border border-border overflow-x-auto">
         <Table>
-          <TableHeader className="bg-slate-900/50">
-            <TableRow className="border-slate-800 hover:bg-slate-900/50">
-              <TableHead className="text-slate-400">Tanggal</TableHead>
-              <TableHead className="text-slate-400">Nama Staff</TableHead>
-              <TableHead className="text-slate-400">Divisi</TableHead>
-              <TableHead className="text-slate-400">Tipe</TableHead>
-              <TableHead className="text-slate-400">Keterangan / Alasan</TableHead>
+          <TableHeader className="bg-card">
+            <TableRow className="border-border hover:bg-card">
+              <TableHead className="text-secondary-foreground">Tanggal</TableHead>
+              <TableHead className="text-secondary-foreground">Nama Staff</TableHead>
+              <TableHead className="text-secondary-foreground">Divisi</TableHead>
+              <TableHead className="text-secondary-foreground">Tipe</TableHead>
+              <TableHead className="text-secondary-foreground">Keterangan / Alasan</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!absences || absences.length === 0 ? (
-              <TableRow className="border-slate-800 hover:bg-slate-900/20">
-                <TableCell colSpan={5} className="h-24 text-center text-slate-500">
+              <TableRow className="border-border hover:bg-card">
+                <TableCell colSpan={5} className="h-24 text-center text-foreground0">
                   Belum ada data ketidakhadiran / izin.
                 </TableCell>
               </TableRow>
             ) : (
               absences.map((abs) => (
-                <TableRow key={abs.id} className="border-slate-800 hover:bg-slate-900/20">
-                  <TableCell className="font-medium text-slate-300">
+                <TableRow key={abs.id} className="border-border hover:bg-card">
+                  <TableCell className="font-medium text-secondary-foreground">
                     {new Date(abs.absence_date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                   </TableCell>
                   <TableCell className="font-semibold text-emerald-400">
                     {(abs.user as any)?.full_name || 'User Terhapus'}
                   </TableCell>
-                  <TableCell className="text-slate-400 text-sm">
+                  <TableCell className="text-secondary-foreground text-sm">
                     {((abs.user as any)?.division as any)?.name || '-'}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="border-slate-700 bg-slate-800 text-slate-300">
+                    <Badge variant="outline" className="border-border bg-muted text-secondary-foreground">
                       {typeMap[abs.type] || abs.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-slate-400 text-sm max-w-[300px] truncate" title={abs.reason}>
+                  <TableCell className="text-secondary-foreground text-sm max-w-[300px] truncate" title={abs.reason}>
                     {abs.reason || '-'}
                   </TableCell>
                 </TableRow>

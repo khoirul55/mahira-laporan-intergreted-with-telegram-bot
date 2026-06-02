@@ -37,36 +37,36 @@ export default async function DivisionsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold">Kelola Divisi</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-secondary-foreground text-sm mt-1">
             Tambah, edit, atau hapus divisi di perusahaan.
           </p>
         </div>
         <CreateDivisionDialog />
       </div>
 
-      <div className="rounded-md border border-slate-800 overflow-x-auto">
+      <div className="rounded-md border border-border overflow-x-auto">
         <Table>
-          <TableHeader className="bg-slate-900/50">
-            <TableRow className="border-slate-800 hover:bg-slate-900/50">
-              <TableHead className="w-[50px] text-slate-400">No</TableHead>
-              <TableHead className="text-slate-400">Nama Divisi</TableHead>
-              <TableHead className="text-slate-400">Deskripsi</TableHead>
-              <TableHead className="text-right text-slate-400">Aksi</TableHead>
+          <TableHeader className="bg-card">
+            <TableRow className="border-border hover:bg-card">
+              <TableHead className="w-[50px] text-secondary-foreground">No</TableHead>
+              <TableHead className="text-secondary-foreground">Nama Divisi</TableHead>
+              <TableHead className="text-secondary-foreground">Deskripsi</TableHead>
+              <TableHead className="text-right text-secondary-foreground">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!divisions || divisions.length === 0 ? (
-              <TableRow className="border-slate-800 hover:bg-slate-900/20">
-                <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+              <TableRow className="border-border hover:bg-card">
+                <TableCell colSpan={4} className="h-24 text-center text-foreground0">
                   Belum ada data divisi.
                 </TableCell>
               </TableRow>
             ) : (
               divisions.map((div, i) => (
-                <TableRow key={div.id} className="border-slate-800 hover:bg-slate-900/20">
-                  <TableCell className="font-medium text-slate-300">{i + 1}</TableCell>
+                <TableRow key={div.id} className="border-border hover:bg-card">
+                  <TableCell className="font-medium text-secondary-foreground">{i + 1}</TableCell>
                   <TableCell className="font-semibold text-emerald-400">{div.name}</TableCell>
-                  <TableCell className="text-slate-400">{div.description || '-'}</TableCell>
+                  <TableCell className="text-secondary-foreground">{div.description || '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       <EditDivisionDialog division={div} />

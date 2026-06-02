@@ -34,7 +34,7 @@ export default async function IzinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
+    <div className="min-h-screen bg-card text-white p-6">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Header */}
@@ -44,48 +44,48 @@ export default async function IzinPage() {
             Kembali ke Beranda
           </Link>
           <h1 className="text-2xl font-bold">Pengajuan Izin / Absen</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-secondary-foreground text-sm mt-1">
             Ajukan ketidakhadiran Anda atau status di luar kantor di sini.
           </p>
         </div>
 
         {/* Form Container */}
-        <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
+        <div className="p-6 rounded-xl bg-card border border-border">
           <IzinForm />
         </div>
 
         {/* Riwayat Container */}
         <div>
           <h2 className="text-xl font-bold mb-4">Riwayat Pengajuan Anda</h2>
-          <div className="rounded-md border border-slate-800 overflow-x-auto">
+          <div className="rounded-md border border-border overflow-x-auto">
             <Table>
-              <TableHeader className="bg-slate-900/50">
-                <TableRow className="border-slate-800 hover:bg-slate-900/50">
-                  <TableHead className="text-slate-400">Tanggal</TableHead>
-                  <TableHead className="text-slate-400">Tipe</TableHead>
-                  <TableHead className="text-slate-400">Keterangan</TableHead>
-                  <TableHead className="text-right text-slate-400">Aksi</TableHead>
+              <TableHeader className="bg-card">
+                <TableRow className="border-border hover:bg-card">
+                  <TableHead className="text-secondary-foreground">Tanggal</TableHead>
+                  <TableHead className="text-secondary-foreground">Tipe</TableHead>
+                  <TableHead className="text-secondary-foreground">Keterangan</TableHead>
+                  <TableHead className="text-right text-secondary-foreground">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {!absences || absences.length === 0 ? (
-                  <TableRow className="border-slate-800 hover:bg-slate-900/20">
-                    <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+                  <TableRow className="border-border hover:bg-card">
+                    <TableCell colSpan={4} className="h-24 text-center text-foreground0">
                       Belum ada riwayat izin.
                     </TableCell>
                   </TableRow>
                 ) : (
                   absences.map((abs) => (
-                    <TableRow key={abs.id} className="border-slate-800 hover:bg-slate-900/20">
-                      <TableCell className="font-medium text-slate-300">
+                    <TableRow key={abs.id} className="border-border hover:bg-card">
+                      <TableCell className="font-medium text-secondary-foreground">
                         {new Date(abs.absence_date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="border-slate-700 bg-slate-800 text-slate-300">
+                        <Badge variant="outline" className="border-border bg-muted text-secondary-foreground">
                           {typeMap[abs.type] || abs.type}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-slate-400 text-sm max-w-[200px] truncate" title={abs.reason}>
+                      <TableCell className="text-secondary-foreground text-sm max-w-[200px] truncate" title={abs.reason}>
                         {abs.reason || '-'}
                       </TableCell>
                       <TableCell className="text-right">

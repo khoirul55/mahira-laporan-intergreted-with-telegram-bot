@@ -38,15 +38,15 @@ export function IzinForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="absence_date">Tanggal</Label>
-          <Input id="absence_date" name="absence_date" type="date" required className="bg-slate-950 border-slate-700" />
+          <Input id="absence_date" name="absence_date" type="date" required className="bg-card border-border" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="type">Tipe Izin</Label>
           <Select name="type" required>
-            <SelectTrigger className="bg-slate-950 border-slate-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue placeholder="Pilih tipe..." />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+            <SelectContent className="bg-card border-border text-white">
               <SelectItem value="sakit">Sakit</SelectItem>
               <SelectItem value="cuti">Cuti</SelectItem>
               <SelectItem value="dinas_luar">Dinas Luar</SelectItem>
@@ -57,7 +57,7 @@ export function IzinForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="reason">Alasan / Keterangan</Label>
-        <Textarea id="reason" name="reason" rows={3} placeholder="Sebutkan alasan izin..." className="bg-slate-950 border-slate-700" />
+        <Textarea id="reason" name="reason" rows={3} placeholder="Sebutkan alasan izin..." className="bg-card border-border" />
       </div>
       <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
         {loading ? 'Mengirim...' : 'Ajukan Izin'}

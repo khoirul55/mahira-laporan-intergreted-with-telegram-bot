@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { getTodayWIB } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -27,7 +28,7 @@ export default async function PantauLaporanPage() {
     redirect('/beranda')
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
 
   // 1. Fetch all staff
   const { data: staffs } = await supabase
@@ -53,25 +54,25 @@ export default async function PantauLaporanPage() {
     <div className="p-6 md:p-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Pantau Laporan Harian</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-secondary-foreground text-sm mt-1">
           Status pelaporan kerja seluruh staff untuk hari ini ({new Date(today).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}).
         </p>
       </div>
 
-      <div className="rounded-md border border-slate-800 overflow-x-auto">
+      <div className="rounded-md border border-border overflow-x-auto">
         <Table>
-          <TableHeader className="bg-slate-900/50">
-            <TableRow className="border-slate-800 hover:bg-slate-900/50">
-              <TableHead className="text-slate-400">Nama Staff</TableHead>
-              <TableHead className="text-slate-400">Divisi</TableHead>
-              <TableHead className="text-slate-400">Status Hari Ini</TableHead>
-              <TableHead className="text-right text-slate-400">Detail</TableHead>
+          <TableHeader className="bg-card">
+            <TableRow className="border-border hover:bg-card">
+              <TableHead className="text-secondary-foreground">Nama Staff</TableHead>
+              <TableHead className="text-secondary-foreground">Divisi</TableHead>
+              <TableHead className="text-secondary-foreground">Status Hari Ini</TableHead>
+              <TableHead className="text-right text-secondary-foreground">Detail</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {!staffs || staffs.length === 0 ? (
-              <TableRow className="border-slate-800 hover:bg-slate-900/20">
-                <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+              <TableRow className="border-border hover:bg-card">
+                <TableCell colSpan={4} className="h-24 text-center text-foreground0">
                   Belum ada data staff.
                 </TableCell>
               </TableRow>
@@ -91,9 +92,9 @@ export default async function PantauLaporanPage() {
                 }
 
                 return (
-                  <TableRow key={staff.id} className="border-slate-800 hover:bg-slate-900/20">
-                    <TableCell className="font-medium text-slate-200">{staff.full_name}</TableCell>
-                    <TableCell className="text-slate-400 text-sm">
+                  <TableRow key={staff.id} className="border-border hover:bg-card">
+                    <TableCell className="font-medium text-foreground">{staff.full_name}</TableCell>
+                    <TableCell className="text-secondary-foreground text-sm">
                       {((staff.division as unknown) as { name: string } | null)?.name || 'Tanpa Divisi'}
                     </TableCell>
                     <TableCell>
@@ -108,7 +109,7 @@ export default async function PantauLaporanPage() {
                           Lihat Detail
                         </Link>
                       ) : (
-                        <span className="text-xs text-slate-600 italic">-</span>
+                        <span className="text-xs text-muted-foreground italic">-</span>
                       )}
                     </TableCell>
                   </TableRow>

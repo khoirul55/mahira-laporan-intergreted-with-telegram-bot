@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTelegramMessage, formatReminderMessage } from '@/lib/telegram'
+import { getTodayWIB } from '@/lib/utils'
 
 // Endpoint untuk trigger daily reminder (dipanggil oleh cron-job.org)
 export async function GET(request: NextRequest) {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createAdminClient()
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://laporan.mahiratour.id'
 
   // Get all active staff with telegram_id

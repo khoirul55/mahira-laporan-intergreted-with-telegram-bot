@@ -22,30 +22,30 @@ export function CreateAnnouncementForm() {
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden sticky top-6">
-      <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center gap-2">
+    <div className="bg-card border border-border rounded-xl overflow-hidden sticky top-6">
+      <div className="p-4 border-b border-border bg-card flex items-center gap-2">
         <Plus className="w-5 h-5 text-amber-500" />
-        <h3 className="font-semibold text-slate-200">Buat Pengumuman Baru</h3>
+        <h3 className="font-semibold text-foreground">Buat Pengumuman Baru</h3>
       </div>
       <form ref={formRef} action={action} className="p-5 space-y-4">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-slate-400 mb-1">Judul Pengumuman</label>
+          <label htmlFor="title" className="block text-sm font-medium text-secondary-foreground mb-1">Judul Pengumuman</label>
           <Input 
             id="title" 
             name="title" 
             placeholder="Contoh: Libur Nasional Idul Fitri" 
             required 
-            className="bg-slate-950 border-slate-800"
+            className="bg-card border-border"
           />
         </div>
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-slate-400 mb-1">Isi Pengumuman</label>
+          <label htmlFor="content" className="block text-sm font-medium text-secondary-foreground mb-1">Isi Pengumuman</label>
           <Textarea 
             id="content" 
             name="content" 
             placeholder="Tuliskan pesan yang ingin disampaikan..." 
             required 
-            className="min-h-[150px] bg-slate-950 border-slate-800"
+            className="min-h-[150px] bg-card border-border"
           />
         </div>
         <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white">

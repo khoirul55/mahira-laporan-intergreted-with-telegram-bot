@@ -57,11 +57,11 @@ export function DireksiFeedbackForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-      <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between gap-4">
+    <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="p-4 border-b border-border bg-card flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-emerald-400" />
-          <h3 className="font-semibold text-slate-200">Feedback / Catatan Pimpinan</h3>
+          <h3 className="font-semibold text-foreground">Feedback / Catatan Pimpinan</h3>
         </div>
         <div className="hidden md:block">
           <AIGenerateButton
@@ -83,7 +83,7 @@ export function DireksiFeedbackForm({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Tuliskan komentar, evaluasi, atau arahan untuk laporan ini..."
-          className="min-h-[120px] bg-slate-950 border-slate-800 focus-visible:ring-emerald-500/50"
+          className="min-h-[120px] bg-card border-border focus-visible:ring-emerald-500/50"
         />
         <div className="mt-4 flex justify-end">
           <Button 

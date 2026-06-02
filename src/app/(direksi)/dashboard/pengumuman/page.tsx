@@ -35,7 +35,7 @@ export default async function PengumumanPage() {
             <Megaphone className="w-8 h-8 text-amber-500" />
             Papan Pengumuman
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-secondary-foreground text-sm mt-1">
             Buat pengumuman atau broadcast informasi penting ke seluruh staff.
           </p>
         </div>
@@ -50,27 +50,27 @@ export default async function PengumumanPage() {
           <h3 className="text-xl font-semibold mb-4">Riwayat Pengumuman</h3>
           
           {!announcements || announcements.length === 0 ? (
-            <div className="p-8 text-center bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500">
+            <div className="p-8 text-center bg-card border border-border rounded-xl text-foreground0">
               Belum ada pengumuman yang dibuat.
             </div>
           ) : (
             announcements.map((ann) => (
-              <div key={ann.id} className="p-5 bg-slate-900 border border-slate-800 rounded-xl relative overflow-hidden group">
+              <div key={ann.id} className="p-5 bg-card border border-border rounded-xl relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-lg text-slate-200">{ann.title}</h4>
+                  <h4 className="font-bold text-lg text-foreground">{ann.title}</h4>
                   <form action={async () => {
                     'use server'
                     await deleteAnnouncement(ann.id)
                   }}>
-                    <Button variant="ghost" size="icon" className="text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" className="text-foreground0 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </form>
                 </div>
-                <p className="text-slate-400 text-sm whitespace-pre-wrap mb-4">{ann.content}</p>
-                <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <Badge variant="secondary" className="bg-slate-800 text-slate-300 hover:bg-slate-800">
+                <p className="text-secondary-foreground text-sm whitespace-pre-wrap mb-4">{ann.content}</p>
+                <div className="flex items-center gap-3 text-xs text-foreground0">
+                  <Badge variant="secondary" className="bg-muted text-secondary-foreground hover:bg-muted">
                     Oleh: {(ann.author as any)?.full_name || 'Sistem'}
                   </Badge>
                   <span>•</span>

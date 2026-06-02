@@ -3,9 +3,10 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Megaphone, FileText, Calendar, FolderOpen, ChevronRight, CheckCircle2, Clock, AlertCircle, BookOpen } from 'lucide-react'
 import { LogoutButton } from './logout-button'
+import { getTodayWIB } from '@/lib/utils'
 
 function getTodayStatus(reports: any[], plans: any[]) {
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
   const report = reports?.find(r => r.report_date === today)
   const plan = plans?.find(p => p.plan_date === today)
 
@@ -35,7 +36,7 @@ export default async function BerandaPage() {
   .eq('id', user.id)
   .single()
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
 
   const [{ data: reports }, { data: plans }, { data: announcements }] = await Promise.all([
     supabase.from('daily_reports').select('report_date, status').eq('user_id', user.id),

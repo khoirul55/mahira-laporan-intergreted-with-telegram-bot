@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTelegramMessage, verifyWebhookSecret } from '@/lib/telegram'
+import { getTodayWIB } from '@/lib/utils'
 
 // Handle Telegram webhook updates
 export async function POST(request: NextRequest) {
@@ -76,7 +77,7 @@ async function handleStatusCommand(message: { chat: { id: number }; from: { id: 
     return
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getTodayWIB()
 
   // Check absence
   const { data: absence } = await supabase

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { getTodayWIB } from '@/lib/utils'
 
 export type PlanTaskInput = {
   title: string
@@ -29,7 +30,7 @@ export async function createDailyPlan(tasks: PlanTaskInput[]) {
     return { error: 'Anda belum tergabung dalam divisi apapun. Hubungi pimpinan.' }
   }
 
-  const today = new Date().toISOString().split('T')[0] // 'YYYY-MM-DD'
+  const today = getTodayWIB() // 'YYYY-MM-DD'
 
   // 1. Create Daily Work Plan
   const { data: plan, error: planError } = await supabase
@@ -199,7 +200,7 @@ async function notifyDireksiOnSubmit(userId: string, reportId: number) {
   const message = formatSubmitNotification({
     staffName: staff.full_name,
     divisionName: division?.name || '-',
-    date: report?.report_date || new Date().toISOString().split('T')[0],
+    date: report?.report_date || getTodayWIB(),
     completedTasks,
     totalTasks,
   })

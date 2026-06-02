@@ -9,19 +9,19 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ 
-  icon = <FolderX className="h-10 w-10 text-slate-500" />, 
+  icon = <FolderX className="h-10 w-10 text-foreground0" />, 
   title, 
   description, 
   action 
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[250px] rounded-xl border border-dashed border-slate-800 bg-slate-900/20 w-full">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 mb-4 border border-slate-800">
+    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[250px] rounded-xl border border-dashed border-border bg-card w-full">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-card mb-4 border border-border">
         {icon}
       </div>
-      <h3 className="text-base font-semibold text-slate-300">{title}</h3>
+      <h3 className="text-base font-semibold text-secondary-foreground">{title}</h3>
       {description && (
-        <p className="text-sm text-slate-500 mt-1 max-w-sm">
+        <p className="text-sm text-foreground0 mt-1 max-w-sm">
           {description}
         </p>
       )}
