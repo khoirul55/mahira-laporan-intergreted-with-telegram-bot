@@ -18,6 +18,7 @@ import { createDailyPlan, submitDailyReport, PlanTaskInput, TaskUpdateInput } fr
 import { toast } from 'sonner'
 import { Plus, Trash2, CheckCircle2, UploadCloud, X, ImageIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 export function CreatePlanForm() {
   const router = useRouter()
@@ -127,6 +128,7 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
   const [loading, setLoading] = useState(false)
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [showConfirm, setShowConfirm] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleUpdateChange = (index: number, field: keyof TaskUpdateInput, value: string) => {
@@ -135,13 +137,12 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     setTaskUpdates(newUpdates)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!confirm('Anda yakin ingin men-submit laporan ini? Setelah disubmit, laporan tidak dapat diubah lagi.')) {
-      return
-    }
+    setShowConfirm(true)
+  }
 
+  const handleConfirmSubmit = async () => {
     setLoading(true)
 
     let evidenceUrl = null
@@ -301,6 +302,16 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
           {loading ? 'Menyimpan...' : 'Submit Laporan Final'}
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Konfirmasi Submit Laporan"
+        description="Anda yakin ingin men-submit laporan ini? Setelah disubmit, laporan tidak dapat diubah lagi dan akan diteruskan ke pimpinan."
+        onConfirm={handleConfirmSubmit}
+        variant="default"
+        confirmText="Ya, Submit"
+      />
     </form>
   )
 }

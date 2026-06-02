@@ -15,6 +15,7 @@ import {
 import { createAbsence, deleteAbsence } from '@/actions/absence'
 import { toast } from 'sonner'
 import { Trash2 } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 export function IzinForm() {
   const [loading, setLoading] = useState(false)
@@ -68,10 +69,9 @@ export function IzinForm() {
 
 export function DeleteAbsenceButton({ id }: { id: number }) {
   const [loading, setLoading] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
-  async function handleDelete() {
-    if (!confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')) return
-    
+  async function handleConfirmDelete() {
     setLoading(true)
     const res = await deleteAbsence(id)
     setLoading(false)
@@ -84,15 +84,27 @@ export function DeleteAbsenceButton({ id }: { id: number }) {
   }
 
   return (
-    <Button 
-      onClick={handleDelete} 
-      disabled={loading} 
-      variant="ghost" 
-      size="icon" 
-      className="h-8 w-8 text-rose-400 hover:text-rose-300"
-      title="Batalkan"
-    >
-      <Trash2 className="w-4 h-4" />
-    </Button>
+    <>
+      <Button 
+        onClick={() => setShowConfirm(true)} 
+        disabled={loading} 
+        variant="ghost" 
+        size="icon" 
+        className="h-8 w-8 text-rose-400 hover:text-rose-300"
+        title="Batalkan"
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+
+      <ConfirmDialog
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Batalkan Pengajuan Izin"
+        description="Apakah Anda yakin ingin membatalkan pengajuan izin ini?"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        confirmText="Ya, Batalkan"
+      />
+    </>
   )
 }

@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 import { downloadArchiveFile, deleteArchiveFile, updateFileDescription, togglePinDocument, ArchiveFile } from '@/actions/archive'
 import { Download, Trash2, Edit2, File, Search, Loader2, Eye, Pin } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface FileListProps {
   files: ArchiveFile[]
@@ -19,6 +21,9 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editDescription, setEditDescription] = useState('')
   const [togglingPinId, setTogglingPinId] = useState<number | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
+  
+  const router = useRouter()
 
   const handleTogglePin = async (fileId: number) => {
     setTogglingPinId(fileId)
@@ -69,12 +74,11 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
     }
   }
 
-  const handleDelete = async (fileId: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus file ini?')) {
-      return
-    }
+  const handleDelete = async () => {
+    if (!deleteConfirmId) return
 
-    setDeletingId(fileId)
+    setDeletingId(deleteConfirmId)
+    const fileId = deleteConfirmId
     try {
       const result = await deleteArchiveFile(fileId)
       
@@ -83,11 +87,13 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
       } else {
         toast.success(result.message)
         onFileDeleted?.()
+        router.refresh()
       }
     } catch (error) {
       toast.error('Terjadi kesalahan saat menghapus')
     } finally {
       setDeletingId(null)
+      setDeleteConfirmId(null)
     }
   }
 
@@ -308,7 +314,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
                             )}
                           </button>
                           <button
-                            onClick={() => handleDelete(file.id)}
+                            onClick={() => setDeleteConfirmId(file.id)}
                             disabled={deletingId === file.id}
                             className="btn-ghost h-8 px-2 text-destructive hover:text-destructive"
                           >
@@ -328,6 +334,16 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
           </div>
         )}
       </div>
+      
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+        title="Hapus File Arsip"
+        description="Apakah Anda yakin ingin menghapus file ini? Tindakan ini tidak dapat dibatalkan dan file akan dihapus selamanya."
+        onConfirm={handleDelete}
+        variant="destructive"
+        confirmText="Ya, Hapus"
+      />
     </div>
   )
 }
