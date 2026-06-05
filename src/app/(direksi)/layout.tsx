@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { LogoutButton } from '../(staff)/beranda/logout-button'
+import { ThemeToggle } from '@/components/theme-toggle'
 import {
   LayoutDashboard, Users, Folders, CalendarDays,
   FileText, Megaphone, FolderOpen, Menu, X,
@@ -85,7 +86,7 @@ export default function DireksiLayout({ children }: { children: React.ReactNode 
     <div className="flex min-h-screen bg-background text-foreground">
       {/* Sidebar Desktop */}
       <aside className="w-60 border-r border-border bg-card flex-col hidden md:flex flex-shrink-0">
-        <div className="p-5 border-b border-border">
+        <div className="p-5 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
@@ -95,6 +96,7 @@ export default function DireksiLayout({ children }: { children: React.ReactNode 
               <p className="text-xs text-muted-foreground leading-tight">Pimpinan</p>
             </div>
           </div>
+          <ThemeToggle />
         </div>
 
         <nav className="flex-1 p-3 space-y-0.5">
@@ -139,14 +141,19 @@ export default function DireksiLayout({ children }: { children: React.ReactNode 
       <main className="flex-1 overflow-y-auto min-w-0">
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card sticky top-0 z-30">
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="text-muted-foreground hover:text-foreground p-1"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <span className="text-sm font-semibold text-foreground">Mahira Tour</span>
-          <LogoutButton />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="text-muted-foreground hover:text-foreground p-1"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <span className="text-sm font-semibold text-foreground">Mahira Tour</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LogoutButton />
+          </div>
         </div>
 
         {children}

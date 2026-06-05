@@ -79,7 +79,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Cari file..."
                 value={searchTerm}
@@ -125,7 +125,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
                 setSelectedDivision('all')
                 setSelectedFileType('all')
               }}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted transition-colors"
             >
               Reset Filter
             </button>
@@ -163,7 +163,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">File Tersaring</p>
+                <p className="text-sm font-medium text-muted-foreground">File Tersaring</p>
                 <p className="text-2xl font-bold">{stats.totalFiles}</p>
               </div>
               <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -177,7 +177,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Size</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Size</p>
                 <p className="text-2xl font-bold">{(stats.totalSize / 1024 / 1024).toFixed(1)} MB</p>
               </div>
               <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -191,7 +191,7 @@ export default function ArchiveFilterClient({ initialFiles, divisions }: Archive
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Hari Ini</p>
+                <p className="text-sm font-medium text-muted-foreground">Hari Ini</p>
                 <p className="text-2xl font-bold">{stats.todayFiles}</p>
               </div>
               <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Megaphone, FileText, Calendar, FolderOpen, ChevronRight, CheckCircle2, Clock, AlertCircle, BookOpen } from 'lucide-react'
 import { LogoutButton } from './logout-button'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { getTodayWIB } from '@/lib/utils'
 
 function getTodayStatus(reports: any[], plans: any[]) {
@@ -118,7 +119,10 @@ export default async function BerandaPage() {
               {divisionName || 'Belum ada divisi'} · Staff
             </p>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LogoutButton />
+          </div>
         </div>
 
         {/* Status Laporan Hari Ini */}

@@ -113,7 +113,7 @@ export default function SearchClient({
       case 'plan_only':
         return <AlertCircle className="w-4 h-4 text-blue-600" />
       default:
-        return <Clock className="w-4 h-4 text-gray-600" />
+        return <Clock className="w-4 h-4 text-muted-foreground" />
     }
   }
 
@@ -133,7 +133,7 @@ export default function SearchClient({
     }
 
     return (
-      <Badge className={variants[status] || 'bg-gray-100 text-gray-800'}>
+      <Badge className={variants[status] || 'bg-muted text-muted-foreground'}>
         {getStatusIcon(status)}
         <span className="ml-1">{labels[status] || status}</span>
       </Badge>
@@ -156,7 +156,7 @@ export default function SearchClient({
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Pantau Laporan Semua Staff</h1>
-          <p className="text-gray-600">Monitor laporan kerja semua staff</p>
+          <p className="text-muted-foreground">Monitor laporan kerja semua staff</p>
         </div>
         <Button
           variant="outline"
@@ -263,7 +263,7 @@ export default function SearchClient({
                 <div key={divisionName} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="font-medium">{divisionName}</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {submitted}/{total} laporan lengkap ({percentage}%)
                     </div>
                   </div>
@@ -320,12 +320,12 @@ export default function SearchClient({
                     <TableRow key={report.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
                           <div>
                             <div className="font-medium">
                               {format(new Date(report.report_date), 'EEEE, d MMMM yyyy', { locale: id })}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {format(new Date(report.created_at), 'HH:mm')}
                             </div>
                           </div>
@@ -333,7 +333,7 @@ export default function SearchClient({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-gray-400" />
+                          <Users className="w-4 h-4 text-muted-foreground" />
                           <span className="font-medium">{report.users.full_name}</span>
                         </div>
                       </TableCell>
@@ -352,7 +352,7 @@ export default function SearchClient({
                             Ada feedback
                           </div>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -374,7 +374,7 @@ export default function SearchClient({
               </Table>
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <History className="w-12 h-12 mx-auto mb-4" />
               <h3 className="font-semibold">Tidak Ada Laporan</h3>
               <p className="text-sm mt-2">
