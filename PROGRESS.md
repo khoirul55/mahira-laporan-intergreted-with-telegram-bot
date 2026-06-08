@@ -126,13 +126,28 @@
 - [x] Vercel deploy berhasil dari branch `main`
 - [x] Cron-job.org dikonfigurasi: Weekly Digest (Senin 08:00), Keep-alive (harian 06:00)
 
+### Fase 6 — UI/UX Polishing (8 Juni 2026)
+- [x] Font Inter + JetBrains Mono (migrasi dari Geist)
+- [x] Light/Dark mode toggle dengan `next-themes`
+- [x] CSS variables: warm earth tone (light) + warm dark
+- [x] Typography scale: `.text-display`, `.text-page-title`, `.text-section-head`, dll
+- [x] Inter OpenType features: cv01-cv04, tnum, ss01, case
+- [x] Migrasi semua hardcoded `slate-*` → semantic tokens
+- [x] Themed scrollbar + light-mode surface shadow
+- [x] ThemeToggle di sidebar Direksi (desktop + mobile)
+
+### Fase 7 — Automated E2E Testing (8 Juni 2026)
+- [x] Playwright config: desktop Chrome + mobile Chrome
+- [x] Smoke test: navigasi, login, API routes
+- [x] 20/20 test cases PASSED (production Vercel)
+
 ---
 
 ## 🚧 BELUM DIKERJAKAN
 
 ### Wajib Sebelum 15 Juni
-- [ ] **UI/UX Polishing** — perbaikan tampilan visual (mobile + desktop)
-- [ ] **Testing end-to-end** — test semua fitur di production
+- [x] **UI/UX Polishing** — font Inter, Light/Dark mode, CSS variables, typography scale, themed scrollbar ✅ 8 Juni
+- [x] **Testing end-to-end** — test semua fitur di production (20/20 passed, Playwright) ✅ 8 Juni
 - [ ] **User Guide** — panduan penggunaan untuk staff & pimpinan
 - [ ] **Dokumentasi Teknis** — arsitektur, API, deployment
 - [ ] **Laporan Akhir Magang** — rangkuman project & kontribusi
