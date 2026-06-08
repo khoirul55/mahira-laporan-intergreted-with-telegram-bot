@@ -5,19 +5,24 @@ import { createAnnouncement, deleteAnnouncement } from '@/actions/announcement'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from 'sonner'
 import { Send, Plus, Trash2, Loader2 } from 'lucide-react'
 
 export function CreateAnnouncementForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const [isPending, setIsPending] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!confirm('Apakah Anda yakin ingin menyebarkan pengumuman ini ke seluruh staff?')) return
-    
+    setShowConfirm(true)
+  }
+
+  async function executeAction() {
+    if (!formRef.current) return
     setIsPending(true)
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(formRef.current)
     const res = await createAnnouncement(formData)
     setIsPending(false)
     
@@ -30,7 +35,8 @@ export function CreateAnnouncementForm() {
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden sticky top-6">
+    <>
+      <div className="bg-card border border-border rounded-xl overflow-hidden sticky top-6">
       <div className="p-4 border-b border-border bg-card flex items-center gap-2">
         <Plus className="w-5 h-5 text-amber-500" />
         <h3 className="font-semibold text-foreground">Buat Pengumuman Baru</h3>
@@ -62,19 +68,42 @@ export function CreateAnnouncementForm() {
         </Button>
       </form>
     </div>
+    <ConfirmDialog 
+      open={showConfirm} 
+      onOpenChange={setShowConfirm}
+      title="Sebarkan Pengumuman"
+      description="Apakah Anda yakin ingin menyebarkan pengumuman ini ke seluruh staff? Notifikasi mungkin akan dikirim."
+      confirmText="Ya, Broadcast"
+      cancelText="Batal"
+      onConfirm={executeAction}
+    />
+    </>
   )
 }
 
 export function DeleteAnnouncementButton({ id }: { id: number }) {
   const [isPending, setIsPending] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   return (
+    <>
     <Button 
       variant="ghost" 
       size="icon" 
       disabled={isPending}
-      onClick={async () => {
-        if (!confirm('Yakin ingin menghapus pengumuman ini?')) return;
+      onClick={() => setShowConfirm(true)}
+      className="text-foreground0 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
+      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+    </Button>
+    <ConfirmDialog 
+      open={showConfirm} 
+      onOpenChange={setShowConfirm}
+      title="Hapus Pengumuman"
+      description="Pengumuman ini akan dihapus secara permanen dari sistem dan beranda staff. Lanjutkan?"
+      confirmText="Ya, Hapus"
+      cancelText="Batal"
+      variant="destructive"
+      onConfirm={async () => {
         setIsPending(true)
         const res = await deleteAnnouncement(id)
         setIsPending(false)
@@ -84,8 +113,7 @@ export function DeleteAnnouncementButton({ id }: { id: number }) {
           toast.success('Pengumuman berhasil dihapus')
         }
       }}
-      className="text-foreground0 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
-      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-    </Button>
+    />
+    </>
   )
 }
