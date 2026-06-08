@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Megaphone, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { CreateAnnouncementForm } from './announcement-form'
+import { CreateAnnouncementForm, DeleteAnnouncementButton } from './announcement-form'
 import { deleteAnnouncement } from '@/actions/announcement'
 
 export default async function PengumumanPage() {
@@ -59,14 +59,7 @@ export default async function PengumumanPage() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-bold text-lg text-foreground">{ann.title}</h4>
-                  <form action={async () => {
-                    'use server'
-                    await deleteAnnouncement(ann.id)
-                  }}>
-                    <Button variant="ghost" size="icon" className="text-foreground0 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </form>
+                  <DeleteAnnouncementButton id={ann.id} />
                 </div>
                 <p className="text-secondary-foreground text-sm whitespace-pre-wrap mb-4">{ann.content}</p>
                 <div className="flex items-center gap-3 text-xs text-foreground0">
