@@ -105,6 +105,7 @@ CREATE TABLE plan_tasks (
   plan_id        INT NOT NULL REFERENCES daily_work_plans(id) ON DELETE CASCADE,
   title          TEXT NOT NULL,
   priority       TEXT NOT NULL DEFAULT 'sedang' CHECK (priority IN ('tinggi', 'sedang', 'rendah')),
+  is_adhoc       BOOLEAN DEFAULT false,
   source_task_id INT REFERENCES plan_tasks(id),
   created_at     TIMESTAMPTZ DEFAULT now()
 );

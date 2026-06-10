@@ -237,3 +237,55 @@ export async function addDireksiNotes(reportId: number, notes: string) {
   revalidatePath(`/dashboard/laporan/${reportId}`)
   return { success: true }
 }
+
+export async function addAdhocTask(reportId: number, title: string, priority: 'tinggi' | 'sedang' | 'rendah') {
+  if (!title.trim()) return { error: 'Judul tugas tidak boleh kosong' }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // 1. Get the plan_id from the report
+  const { data: report, error: reportError } = await supabase
+    .from('daily_reports')
+    .select('plan_id, user_id, status')
+    .eq('id', reportId)
+    .single()
+
+  if (reportError || !report) return { error: 'Laporan tidak ditemukan' }
+  if (report.user_id !== user.id) return { error: 'Bukan laporan Anda' }
+  if (report.status === 'submitted') return { error: 'Laporan sudah disubmit, tidak bisa menambah tugas' }
+
+  // 2. Insert into plan_tasks with is_adhoc = true
+  const { data: insertedTask, error: taskError } = await supabase
+    .from('plan_tasks')
+    .insert([{
+      plan_id: report.plan_id,
+      title: title.trim(),
+      priority,
+      is_adhoc: true
+    }])
+    .select()
+    .single()
+
+  if (taskError) return { error: 'Gagal menambahkan tugas' }
+
+  // 3. Insert into task_updates
+  const { error: updateError } = await supabase
+    .from('task_updates')
+    .insert([{
+      report_id: reportId,
+      plan_task_id: insertedTask.id,
+      completion_status: 'dalam_proses',
+      notes: ''
+    }])
+
+  if (updateError) {
+    // Rollback
+    await supabase.from('plan_tasks').delete().eq('id', insertedTask.id)
+    return { error: 'Gagal membuat status tugas' }
+  }
+
+  revalidatePath('/beranda/laporan')
+  return { success: true }
+}

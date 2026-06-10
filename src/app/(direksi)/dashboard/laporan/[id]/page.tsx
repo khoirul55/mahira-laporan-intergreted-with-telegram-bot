@@ -122,9 +122,14 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
             {report.task_updates.map((update: any) => (
               <div key={update.id} className="p-4 rounded-xl border border-border bg-card flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <h4 className="font-medium text-foreground">{update.plan_task.title}</h4>
                     {update.plan_task.priority === 'tinggi' && <Badge variant="destructive" className="h-5 text-[10px]">Tinggi</Badge>}
+                    {update.plan_task.is_adhoc && (
+                      <Badge variant="outline" className="border-blue-500/20 bg-blue-500/10 text-blue-400 h-5 text-[10px]">
+                        🆕 Tambahan
+                      </Badge>
+                    )}
                   </div>
                   {update.notes ? (
                     <p className="text-sm text-secondary-foreground mt-2 bg-card p-2 rounded-md border border-border">

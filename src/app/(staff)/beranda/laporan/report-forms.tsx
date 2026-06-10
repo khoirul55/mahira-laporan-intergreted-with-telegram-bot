@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createDailyPlan, submitDailyReport, PlanTaskInput, TaskUpdateInput } from '@/actions/report'
+import { createDailyPlan, submitDailyReport, PlanTaskInput, TaskUpdateInput, addAdhocTask } from '@/actions/report'
 import { toast } from 'sonner'
 import { Plus, Trash2, CheckCircle2, UploadCloud, X, ImageIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -132,6 +132,87 @@ export function CreatePlanForm() {
   )
 }
 
+function AddAdhocTaskDialog({ reportId }: { reportId: number }) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState('')
+  const [priority, setPriority] = useState<'tinggi'|'sedang'|'rendah'>('sedang')
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!title.trim()) {
+      toast.error('Judul tugas tidak boleh kosong')
+      return
+    }
+    setLoading(true)
+    const res = await addAdhocTask(reportId, title, priority)
+    setLoading(false)
+    if (res?.error) {
+      toast.error(res.error)
+    } else {
+      toast.success('Tugas tambahan berhasil ditambahkan!')
+      setOpen(false)
+      setTitle('')
+      setPriority('sedang')
+      router.refresh()
+    }
+  }
+
+  return (
+    <>
+      <Button type="button" onClick={() => setOpen(true)} variant="outline" className="border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 mb-4 w-full sm:w-auto">
+        <Plus className="w-4 h-4 mr-2" />
+        Tambah Tugas Susulan
+      </Button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+          <div className="bg-card border border-border w-full max-w-md rounded-xl shadow-lg p-6 animate-in zoom-in-95">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Tugas Susulan Baru</h3>
+              <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label>Judul Tugas</Label>
+                <Input 
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="Deskripsi tugas tambahan..."
+                  className="bg-background border-border"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Prioritas</Label>
+                <Select value={priority} onValueChange={(val: any) => setPriority(val)}>
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="tinggi">🔴 Tinggi</SelectItem>
+                    <SelectItem value="sedang">🟡 Sedang</SelectItem>
+                    <SelectItem value="rendah">🟢 Rendah</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="pt-2 flex justify-end gap-2">
+                <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Batal</Button>
+                <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  {loading ? 'Menyimpan...' : 'Simpan Tugas'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 
 export function UpdateReportForm({ report, updates }: { report: any, updates: any[] }) {
   const router = useRouter()
@@ -232,17 +313,28 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-medium text-muted-foreground">Daftar Tugas Hari Ini</h3>
+        <AddAdhocTaskDialog reportId={report.id} />
+      </div>
       <div className="space-y-4">
         {updates.map((update, idx) => (
           <div key={update.id} className="p-4 rounded-xl border border-border bg-card flex flex-col md:flex-row gap-6">
             
             {/* Info Tugas Asli */}
             <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline" className={priorityColor(update.plan_task.priority)}>
                   {priorityLabel(update.plan_task.priority)}
                 </Badge>
-                <span className="text-xs text-muted-foreground">Tugas {idx + 1}</span>
+                {update.plan_task.is_adhoc && (
+                  <Badge variant="outline" className="border-blue-500/20 bg-blue-500/10 text-blue-400 text-[10px]">
+                    🆕 Tambahan
+                  </Badge>
+                )}
+                {!update.plan_task.is_adhoc && (
+                  <span className="text-xs text-muted-foreground">Tugas {idx + 1}</span>
+                )}
               </div>
               <h3 className="font-medium text-foreground">{update.plan_task.title}</h3>
             </div>
