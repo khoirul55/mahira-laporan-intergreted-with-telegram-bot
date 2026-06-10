@@ -22,6 +22,10 @@ export function CreateDivisionDialog() {
   const [loading, setLoading] = useState(false)
 
   async function action(formData: FormData) {
+    if (!formData.get('name')?.toString().trim()) {
+      toast.error('Nama divisi tidak boleh kosong')
+      return
+    }
     setLoading(true)
     const res = await createDivision(formData)
     setLoading(false)
@@ -69,6 +73,10 @@ export function EditDivisionDialog({ division }: { division: any }) {
   const [loading, setLoading] = useState(false)
 
   async function action(formData: FormData) {
+    if (!formData.get('name')?.toString().trim()) {
+      toast.error('Nama divisi tidak boleh kosong')
+      return
+    }
     formData.append('id', division.id)
     setLoading(true)
     const res = await updateDivision(formData)

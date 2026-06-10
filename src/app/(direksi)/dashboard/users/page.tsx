@@ -65,7 +65,7 @@ export default async function UsersPage() {
           <TableBody>
             {!users || users.length === 0 ? (
               <TableRow className="border-border hover:bg-card">
-                <TableCell colSpan={5} className="h-24 text-center text-foreground0">
+                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                   Belum ada data user.
                 </TableCell>
               </TableRow>

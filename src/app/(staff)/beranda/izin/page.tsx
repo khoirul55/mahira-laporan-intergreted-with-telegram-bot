@@ -70,7 +70,7 @@ export default async function IzinPage() {
               <TableBody>
                 {!absences || absences.length === 0 ? (
                   <TableRow className="border-border hover:bg-card">
-                    <TableCell colSpan={4} className="h-24 text-center text-foreground0">
+                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                       Belum ada riwayat izin.
                     </TableCell>
                   </TableRow>

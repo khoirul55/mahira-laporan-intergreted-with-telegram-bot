@@ -21,6 +21,10 @@ export function IzinForm() {
   const [loading, setLoading] = useState(false)
 
   async function action(formData: FormData) {
+    if (!formData.get('reason')?.toString().trim()) {
+      toast.error('Alasan izin tidak boleh kosong atau hanya berisi spasi')
+      return
+    }
     setLoading(true)
     const res = await createAbsence(formData)
     setLoading(false)
@@ -47,7 +51,7 @@ export function IzinForm() {
             <SelectTrigger className="bg-card border-border">
               <SelectValue placeholder="Pilih tipe..." />
             </SelectTrigger>
-            <SelectContent className="bg-card border-border text-white">
+            <SelectContent className="bg-popover border-border">
               <SelectItem value="sakit">Sakit</SelectItem>
               <SelectItem value="cuti">Cuti</SelectItem>
               <SelectItem value="dinas_luar">Dinas Luar</SelectItem>

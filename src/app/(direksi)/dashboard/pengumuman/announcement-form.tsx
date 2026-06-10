@@ -16,6 +16,11 @@ export function CreateAnnouncementForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    if (!formData.get('title')?.toString().trim() || !formData.get('content')?.toString().trim()) {
+      toast.error('Judul dan isi pengumuman tidak boleh kosong atau hanya berisi spasi')
+      return
+    }
     setShowConfirm(true)
   }
 
@@ -92,7 +97,7 @@ export function DeleteAnnouncementButton({ id }: { id: number }) {
       size="icon" 
       disabled={isPending}
       onClick={() => setShowConfirm(true)}
-      className="text-foreground0 hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
+      className="text-muted-foreground hover:text-rose-400 hover:bg-rose-950/30 opacity-0 group-hover:opacity-100 transition-opacity">
       {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
     </Button>
     <ConfirmDialog 

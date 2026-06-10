@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { CalendarDays, FileCheck, Clock, UserX, Send, Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 const MONTH_NAMES = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
 
@@ -42,6 +43,7 @@ export default function LaporanBulananPage() {
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
     loadReport()
@@ -89,6 +91,11 @@ export default function LaporanBulananPage() {
   }
 
   async function handleSubmit() {
+    if (!report) return
+    setShowConfirm(true)
+  }
+
+  async function handleConfirmSubmit() {
     if (!report) return
     setSubmitting(true)
     const res = await submitMonthlyReport(report.id)
@@ -267,6 +274,16 @@ export default function LaporanBulananPage() {
               )}
             </div>
           )}
+
+          <ConfirmDialog
+            open={showConfirm}
+            onOpenChange={setShowConfirm}
+            title="Konfirmasi Submit Laporan Bulanan"
+            description="Apakah Anda yakin data laporan bulanan sudah final? Setelah disubmit, laporan ini tidak dapat direvisi kembali."
+            onConfirm={handleConfirmSubmit}
+            variant="default"
+            confirmText="Ya, Submit Laporan"
+          />
         </>
       )}
     </div>

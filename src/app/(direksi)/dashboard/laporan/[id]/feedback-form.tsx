@@ -43,6 +43,12 @@ export function DireksiFeedbackForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    
+    if (!notes.trim()) {
+      toast.error('Feedback tidak boleh kosong atau hanya berisi spasi')
+      return
+    }
+
     setIsLoading(true)
 
     const res = await addDireksiNotes(reportId, notes)

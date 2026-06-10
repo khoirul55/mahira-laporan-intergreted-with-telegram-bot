@@ -24,6 +24,7 @@ export function CreatePlanForm() {
   const router = useRouter()
   const [tasks, setTasks] = useState<PlanTaskInput[]>([{ title: '', priority: 'sedang' }])
   const [loading, setLoading] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const addTask = () => {
     setTasks([...tasks, { title: '', priority: 'sedang' }])
@@ -42,7 +43,7 @@ export function CreatePlanForm() {
     setTasks(newTasks)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validasi
@@ -51,6 +52,10 @@ export function CreatePlanForm() {
       return
     }
 
+    setShowConfirm(true)
+  }
+
+  const handleConfirmSubmit = async () => {
     setLoading(true)
     const res = await createDailyPlan(tasks)
     setLoading(false)
@@ -83,9 +88,11 @@ export function CreatePlanForm() {
                 <Label>Prioritas</Label>
                 <Select value={task.priority} onValueChange={(val) => updateTask(idx, 'priority', val as any)}>
                   <SelectTrigger className="bg-card border-border w-full sm:w-[200px]">
-                    <SelectValue />
+                    <SelectValue placeholder="Pilih prioritas">
+                      {task.priority === 'tinggi' ? '🔴 Tinggi' : task.priority === 'sedang' ? '🟡 Sedang' : '🟢 Rendah'}
+                    </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-card border-border text-white">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="tinggi">🔴 Tinggi</SelectItem>
                     <SelectItem value="sedang">🟡 Sedang</SelectItem>
                     <SelectItem value="rendah">🟢 Rendah</SelectItem>
@@ -95,7 +102,7 @@ export function CreatePlanForm() {
             </div>
             
             {tasks.length > 1 && (
-              <Button type="button" onClick={() => removeTask(idx)} variant="ghost" size="icon" className="text-foreground0 hover:text-rose-400 mt-8">
+              <Button type="button" onClick={() => removeTask(idx)} variant="ghost" size="icon" className="text-muted-foreground hover:text-rose-400 mt-8">
                 <Trash2 className="w-5 h-5" />
               </Button>
             )}
@@ -111,6 +118,16 @@ export function CreatePlanForm() {
           {loading ? 'Menyimpan...' : 'Simpan Rencana Kerja'}
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Konfirmasi Rencana Kerja"
+        description="Apakah rencana kerja hari ini sudah lengkap? Anda tidak akan bisa mengubah atau menambah rencana kerja setelah disimpan."
+        onConfirm={handleConfirmSubmit}
+        variant="default"
+        confirmText="Ya, Simpan"
+      />
     </form>
   )
 }
@@ -201,6 +218,12 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     }
   }
 
+  const priorityLabel = (p: string) => {
+    if (p === 'tinggi') return 'Tinggi'
+    if (p === 'sedang') return 'Sedang'
+    return 'Rendah'
+  }
+
   const priorityColor = (p: string) => {
     if (p === 'tinggi') return 'text-rose-400 border-rose-400/20 bg-rose-400/10'
     if (p === 'sedang') return 'text-amber-400 border-amber-400/20 bg-amber-400/10'
@@ -217,9 +240,9 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={priorityColor(update.plan_task.priority)}>
-                  {update.plan_task.priority.toUpperCase()}
+                  {priorityLabel(update.plan_task.priority)}
                 </Badge>
-                <span className="text-xs text-foreground0">Tugas {idx + 1}</span>
+                <span className="text-xs text-muted-foreground">Tugas {idx + 1}</span>
               </div>
               <h3 className="font-medium text-foreground">{update.plan_task.title}</h3>
             </div>
@@ -233,9 +256,14 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
                   onValueChange={(val) => handleUpdateChange(idx, 'completion_status', val as any)}
                 >
                   <SelectTrigger className="bg-card border-border">
-                    <SelectValue />
+                    <SelectValue placeholder="Pilih status">
+                      {taskUpdates[idx].completion_status === 'selesai' ? '✅ Selesai' :
+                       taskUpdates[idx].completion_status === 'dalam_proses' ? '🔄 Dalam Proses' :
+                       taskUpdates[idx].completion_status === 'tidak_selesai' ? '❌ Tidak Selesai' :
+                       taskUpdates[idx].completion_status === 'dibatalkan' ? '🚫 Dibatalkan' : 'Pilih status'}
+                    </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-card border-border text-white">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="selesai">✅ Selesai</SelectItem>
                     <SelectItem value="dalam_proses">🔄 Dalam Proses</SelectItem>
                     <SelectItem value="tidak_selesai">❌ Tidak Selesai</SelectItem>
@@ -283,7 +311,7 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
             </div>
             <div>
               <p className="text-secondary-foreground font-medium">Klik untuk upload atau drag & drop</p>
-              <p className="text-foreground0 text-sm mt-1">SVG, PNG, JPG atau GIF (Max. 5MB)</p>
+              <p className="text-muted-foreground text-sm mt-1">SVG, PNG, JPG atau GIF (Max. 5MB)</p>
             </div>
             <input 
               type="file" 

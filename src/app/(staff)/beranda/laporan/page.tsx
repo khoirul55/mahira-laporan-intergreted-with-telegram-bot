@@ -130,7 +130,10 @@ export default async function LaporanPage() {
                       update.completion_status === 'dalam_proses' ? 'text-amber-400 border-amber-400' :
                       'text-rose-400 border-rose-400'
                     }>
-                      {update.completion_status.replace('_', ' ').toUpperCase()}
+                      {update.completion_status === 'selesai' ? '✅ Selesai' :
+                       update.completion_status === 'dalam_proses' ? '🔄 Dalam Proses' :
+                       update.completion_status === 'tidak_selesai' ? '❌ Tidak Selesai' :
+                       '🚫 Dibatalkan'}
                     </Badge>
                   </div>
                 </div>

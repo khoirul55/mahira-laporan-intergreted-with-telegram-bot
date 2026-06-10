@@ -50,7 +50,7 @@ export default async function PengumumanPage() {
           <h3 className="text-xl font-semibold mb-4">Riwayat Pengumuman</h3>
           
           {!announcements || announcements.length === 0 ? (
-            <div className="p-8 text-center bg-card border border-border rounded-xl text-foreground0">
+            <div className="p-8 text-center bg-card border border-border rounded-xl text-muted-foreground">
               Belum ada pengumuman yang dibuat.
             </div>
           ) : (
@@ -62,7 +62,7 @@ export default async function PengumumanPage() {
                   <DeleteAnnouncementButton id={ann.id} />
                 </div>
                 <p className="text-secondary-foreground text-sm whitespace-pre-wrap mb-4">{ann.content}</p>
-                <div className="flex items-center gap-3 text-xs text-foreground0">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <Badge variant="secondary" className="bg-muted text-secondary-foreground hover:bg-muted">
                     Oleh: {(ann.author as any)?.full_name || 'Sistem'}
                   </Badge>

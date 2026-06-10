@@ -57,7 +57,7 @@ export default async function DivisionsPage() {
           <TableBody>
             {!divisions || divisions.length === 0 ? (
               <TableRow className="border-border hover:bg-card">
-                <TableCell colSpan={4} className="h-24 text-center text-foreground0">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                   Belum ada data divisi.
                 </TableCell>
               </TableRow>

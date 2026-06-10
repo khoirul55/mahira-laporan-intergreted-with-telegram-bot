@@ -28,6 +28,10 @@ export function CreateUserDialog({ divisions }: { divisions: any[] }) {
   const [loading, setLoading] = useState(false)
 
   async function action(formData: FormData) {
+    if (!formData.get('full_name')?.toString().trim()) {
+      toast.error('Nama lengkap tidak boleh kosong')
+      return
+    }
     setLoading(true)
     const res = await createUser(formData)
     setLoading(false)
@@ -113,6 +117,10 @@ export function EditUserDialog({ user, divisions }: { user: any, divisions: any[
   const [loading, setLoading] = useState(false)
 
   async function action(formData: FormData) {
+    if (!formData.get('full_name')?.toString().trim()) {
+      toast.error('Nama lengkap tidak boleh kosong')
+      return
+    }
     formData.append('id', user.id)
     setLoading(true)
     const res = await updateUser(formData)

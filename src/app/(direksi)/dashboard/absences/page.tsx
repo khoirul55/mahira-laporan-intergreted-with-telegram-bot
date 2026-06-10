@@ -62,7 +62,7 @@ export default async function AbsencesPage() {
           <TableBody>
             {!absences || absences.length === 0 ? (
               <TableRow className="border-border hover:bg-card">
-                <TableCell colSpan={5} className="h-24 text-center text-foreground0">
+                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                   Belum ada data ketidakhadiran / izin.
                 </TableCell>
               </TableRow>

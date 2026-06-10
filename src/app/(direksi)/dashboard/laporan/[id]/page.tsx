@@ -45,9 +45,9 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
           Kembali ke Daftar Laporan
         </Link>
         <div className="p-8 text-center bg-card border border-border rounded-xl">
-          <FileText className="w-12 h-12 text-foreground0 mx-auto mb-4" />
+          <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl font-bold text-secondary-foreground">Laporan Tidak Ditemukan</h2>
-          <p className="text-foreground0 mt-2">Laporan yang Anda cari mungkin sudah dihapus atau tidak tersedia.</p>
+          <p className="text-muted-foreground mt-2">Laporan yang Anda cari mungkin sudah dihapus atau tidak tersedia.</p>
         </div>
       </div>
     )
@@ -83,7 +83,7 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
           <div>
             <p className="text-sm text-secondary-foreground">Staff</p>
             <p className="font-semibold">{staffName}</p>
-            <p className="text-xs text-foreground0">{divisionName}</p>
+            <p className="text-xs text-muted-foreground">{divisionName}</p>
           </div>
         </div>
 
@@ -114,7 +114,7 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
         <h3 className="text-xl font-bold border-b border-border pb-2">Rincian Tugas & Capaian</h3>
         
         {(!report.task_updates || report.task_updates.length === 0) ? (
-          <div className="p-4 text-center text-foreground0 bg-card rounded-xl border border-border">
+          <div className="p-4 text-center text-muted-foreground bg-card rounded-xl border border-border">
             Belum ada rencana kerja yang diisi.
           </div>
         ) : (
@@ -128,11 +128,11 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
                   </div>
                   {update.notes ? (
                     <p className="text-sm text-secondary-foreground mt-2 bg-card p-2 rounded-md border border-border">
-                      <span className="text-xs text-foreground0 block mb-1">Catatan Staff:</span>
+                      <span className="text-xs text-muted-foreground block mb-1">Catatan Staff:</span>
                       {update.notes}
                     </p>
                   ) : (
-                    <p className="text-sm text-foreground0 mt-1 italic">Tidak ada catatan.</p>
+                    <p className="text-sm text-muted-foreground mt-1 italic">Tidak ada catatan.</p>
                   )}
                 </div>
                 <div className="shrink-0 pt-1">
@@ -141,7 +141,10 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
                     update.completion_status === 'dalam_proses' ? 'text-amber-400 border-amber-400/30' :
                     'text-rose-400 border-rose-400/30'
                   }>
-                    {update.completion_status.replace('_', ' ').toUpperCase()}
+                    {update.completion_status === 'selesai' ? '✅ Selesai' :
+                     update.completion_status === 'dalam_proses' ? '🔄 Dalam Proses' :
+                     update.completion_status === 'tidak_selesai' ? '❌ Tidak Selesai' :
+                     '🚫 Dibatalkan'}
                   </Badge>
                 </div>
               </div>
@@ -164,7 +167,7 @@ export default async function DetailLaporanPage({ params }: { params: { id: stri
                 className="w-full h-auto object-cover"
               />
             </a>
-            <p className="text-foreground0 text-sm mt-2">Klik gambar untuk melihat resolusi penuh</p>
+            <p className="text-muted-foreground text-sm mt-2">Klik gambar untuk melihat resolusi penuh</p>
           </div>
         </div>
       )}
