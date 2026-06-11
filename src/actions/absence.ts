@@ -29,6 +29,32 @@ export async function createAbsence(formData: FormData) {
     return { error: error.message }
   }
 
+  // BYPASS: Jika ada draft laporan di hari izin, otomatis batalkan & submit
+  const { data: draftReport } = await supabase
+    .from('daily_reports')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('report_date', absence_date)
+    .eq('status', 'draft')
+    .single()
+
+  if (draftReport) {
+    // 1. Ubah semua task updates menjadi dibatalkan
+    await supabase
+      .from('task_updates')
+      .update({ 
+        completion_status: 'dibatalkan',
+        notes: `Dibatalkan otomatis: Mengajukan Izin ${type.toUpperCase()}`
+      })
+      .eq('report_id', draftReport.id)
+
+    // 2. Ubah status report menjadi submitted
+    await supabase
+      .from('daily_reports')
+      .update({ status: 'submitted' })
+      .eq('id', draftReport.id)
+  }
+
   revalidatePath('/beranda/izin')
   return { success: true }
 }

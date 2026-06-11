@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import imageCompression from 'browser-image-compression'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -255,6 +256,17 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     setTaskUpdates(newUpdates)
   }
 
+  const handleMassCancel = () => {
+    if (!window.confirm('Batalkan semua tugas pagi ini?')) return
+    const newUpdates = taskUpdates.map(u => ({
+      ...u,
+      completion_status: 'dibatalkan',
+      notes: u.notes ? u.notes : 'Dialihkan ke tugas lapangan mendadak'
+    }))
+    setTaskUpdates(newUpdates as TaskUpdateInput[])
+    toast.info('Semua rencana dibatalkan. Silakan tambah Tugas Susulan.')
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setShowConfirm(true)
@@ -266,25 +278,39 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     let evidenceUrl = null
     if (evidenceFile) {
       const supabase = createClient()
-      const fileExt = evidenceFile.name.split('.').pop()
-      const fileName = `${report.id}_${Date.now()}.${fileExt}`
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('report_evidences')
-        .upload(fileName, evidenceFile)
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true
+        }
+        const compressedFile = await imageCompression(evidenceFile, options)
+        
+        const fileExt = evidenceFile.name.split('.').pop()
+        const fileName = `${report.id}_${Date.now()}.${fileExt}`
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('report_evidences')
+          .upload(fileName, compressedFile)
 
-      if (uploadError) {
-        toast.error(`Gagal upload foto: ${uploadError.message}`)
+        if (uploadError) {
+          toast.error(`Gagal upload foto: ${uploadError.message}`)
+          setLoading(false)
+          return
+        }
+        
+        // Get public URL
+        const { data: publicUrlData } = supabase.storage
+          .from('report_evidences')
+          .getPublicUrl(fileName)
+          
+        evidenceUrl = publicUrlData.publicUrl
+      } catch (error) {
+        toast.error('Gagal mengompresi gambar')
         setLoading(false)
         return
       }
-      
-      // Get public URL
-      const { data: publicUrlData } = supabase.storage
-        .from('report_evidences')
-        .getPublicUrl(fileName)
-        
-      evidenceUrl = publicUrlData.publicUrl
     }
 
     const res = await submitDailyReport(report.id, taskUpdates, evidenceUrl)
@@ -335,6 +361,9 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h3 className="text-sm font-medium text-muted-foreground">Daftar Tugas Hari Ini</h3>
+        <Button type="button" onClick={handleMassCancel} variant="outline" className="text-amber-500 border-amber-500/30 hover:bg-amber-500/10 h-8 text-xs">
+          🚕 Beralih ke Tugas Lapangan (Batal Semua)
+        </Button>
       </div>
       <div className="space-y-4">
         {updates.map((update, idx) => (
@@ -427,6 +456,7 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
             <div>
               <p className="text-secondary-foreground font-medium">Klik untuk upload atau drag & drop</p>
               <p className="text-muted-foreground text-sm mt-1">SVG, PNG, JPG atau GIF (Max. 5MB)</p>
+              <p className="text-muted-foreground/60 text-xs mt-2 italic">*Opsional: Screenshot chat, nota, atau foto lapangan</p>
             </div>
             <input 
               type="file" 

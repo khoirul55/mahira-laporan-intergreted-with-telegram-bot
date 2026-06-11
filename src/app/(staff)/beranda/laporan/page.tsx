@@ -56,14 +56,13 @@ export default async function LaporanPage() {
       <div className="min-h-screen bg-background text-foreground p-6">
         <div className="max-w-3xl mx-auto space-y-8">
           <Header />
-          <div className="p-6 bg-rose-950/20 border border-rose-500/20 rounded-xl mb-6">
-            <div className="flex gap-3 text-rose-400">
+          <div className="p-6 bg-amber-950/20 border border-amber-500/20 rounded-xl mb-6">
+            <div className="flex gap-3 text-amber-500">
               <AlertCircle className="w-6 h-6 shrink-0" />
               <div>
-                <h3 className="font-bold">Laporan Tertunda!</h3>
-                <p className="text-sm mt-1">
-                  Anda belum mensubmit laporan untuk tanggal <b>{overdue.report_date}</b>. 
-                  Selesaikan laporan di bawah ini untuk membuka akses rencana kerja hari ini.
+                <h3 className="font-bold">Selesaikan Jurnal Kemarin ☕</h3>
+                <p className="text-sm mt-1 text-amber-500/90">
+                  Sepertinya Anda sangat sibuk kemarin! Mari lengkapi catatan untuk tanggal <b>{overdue.report_date}</b> sebelum memulai hari ini.
                 </p>
               </div>
             </div>
