@@ -87,6 +87,20 @@ export default async function LaporanPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         <Header />
 
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8 text-sm font-medium text-muted-foreground">
+          <div className={`px-4 py-2 rounded-full ${!todayReport ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-card border border-border'}`}>
+            1. Rencana Pagi
+          </div>
+          <div className="w-4 sm:w-8 h-px bg-border"></div>
+          <div className={`px-4 py-2 rounded-full ${todayReport && todayReport.status === 'draft' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-card border border-border'}`}>
+            2. Laporan Realisasi
+          </div>
+          <div className="w-4 sm:w-8 h-px bg-border"></div>
+          <div className={`px-4 py-2 rounded-full ${todayReport && todayReport.status === 'submitted' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-card border border-border'}`}>
+            3. Selesai
+          </div>
+        </div>
+
         {!todayReport ? (
           // Skenario Pagi: Belum buat rencana
           <div>

@@ -152,7 +152,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
   return (
     <div className="surface">
       <div className="p-4 border-b border-border">
-        <div className="flex justify-between items-start gap-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <div>
             <h2 className="text-page-title mb-1">Arsip Dokumen</h2>
             <p className="text-body text-sm">
@@ -166,7 +166,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
               placeholder="Cari file..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-clean pl-10 w-64"
+              className="input-clean pl-10 w-full sm:w-64"
             />
           </div>
         </div>
@@ -191,7 +191,7 @@ export function FileList({ files, isDireksi = false, onFileDeleted, onFileUpdate
             </div>
 
             {/* File Table */}
-            <div className="border border-border rounded-lg overflow-hidden">
+            <div className="border border-border rounded-lg overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-[var(--card)]">

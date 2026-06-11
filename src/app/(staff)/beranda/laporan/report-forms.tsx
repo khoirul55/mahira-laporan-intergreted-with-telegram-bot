@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -227,6 +227,22 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
       notes: u.notes || ''
     }))
   )
+
+  useEffect(() => {
+    if (updates.length !== taskUpdates.length) {
+      setTaskUpdates(
+        updates.map(u => {
+          const existing = taskUpdates.find(tu => tu.update_id === u.id)
+          if (existing) return existing
+          return {
+            update_id: u.id,
+            completion_status: u.completion_status,
+            notes: u.notes || ''
+          }
+        })
+      )
+    }
+  }, [updates])
   const [loading, setLoading] = useState(false)
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -319,7 +335,6 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h3 className="text-sm font-medium text-muted-foreground">Daftar Tugas Hari Ini</h3>
-        <AddAdhocTaskDialog reportId={report.id} />
       </div>
       <div className="space-y-4">
         {updates.map((update, idx) => (
@@ -380,6 +395,10 @@ export function UpdateReportForm({ report, updates }: { report: any, updates: an
 
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-center sm:justify-end mt-2 mb-2">
+        <AddAdhocTaskDialog reportId={report.id} />
       </div>
 
       <div className="p-6 rounded-xl border border-border bg-card mt-6">
