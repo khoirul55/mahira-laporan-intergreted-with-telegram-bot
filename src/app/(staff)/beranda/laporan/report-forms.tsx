@@ -84,11 +84,11 @@ export function CreatePlanForm() {
             <div className="flex-1 space-y-4">
               <div className="space-y-2">
                 <Label>Tugas {idx + 1}</Label>
-                <Input 
+                <Textarea 
                   value={task.title}
                   onChange={(e) => updateTask(idx, 'title', e.target.value)}
                   placeholder="Deskripsikan tugas..." 
-                  className="bg-card border-border"
+                  className="bg-card border-border resize-none min-h-[80px]"
                   required
                 />
               </div>
