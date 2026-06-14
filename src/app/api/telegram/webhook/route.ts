@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
       await handleHelpCommand(update.message)
     } else if (text.startsWith('/izin')) {
       await handleIzinCommand(update.message)
+    } else if (text.startsWith('/unlink')) {
+      await handleUnlinkCommand(update.message)
     } else {
       await sendTelegramMessage(update.message.chat.id.toString(), '❓ Command tidak dikenali. Ketik /help untuk melihat daftar command yang tersedia.')
     }
@@ -122,6 +124,7 @@ async function handleHelpCommand(message: { chat: { id: number } }) {
 /start — Hubungkan akun Telegram
 /status — Cek status laporan hari ini
 /izin — Lihat rekap izin bulan ini
+/unlink — Lepaskan (unbind) akun Telegram
 /help — Tampilkan bantuan ini
 
 💡 Hubungkan akun dulu di halaman Profil website agar bisa gunakan semua fitur.`)
@@ -171,3 +174,18 @@ async function handleIzinCommand(message: { chat: { id: number } }) {
   await sendTelegramMessage(chatId, `📅 <b>Rekap Izin Bulan Ini</b>\n\nHalo <b>${user.full_name}</b>,\n\nTotal: <b>${absences.length} hari</b>\n${lines.join('\n')}\n\n➕ <a href="${process.env.NEXT_PUBLIC_APP_URL}/beranda/izin">Ajukan Izin Baru</a>`)
 }
 
+async function handleUnlinkCommand(message: { chat: { id: number } }) {
+  const chatId = message.chat.id.toString()
+  const supabase = createAdminClient()
+
+  // Find users with this telegram_id
+  const { data: users } = await supabase.from('users').select('id').eq('telegram_id', chatId)
+
+  if (users && users.length > 0) {
+    // Nullify telegram_id for all accounts linked to this chat
+    await supabase.from('users').update({ telegram_id: null }).eq('telegram_id', chatId)
+    await sendTelegramMessage(chatId, '✅ <b>Akun Telegram berhasil dilepaskan (unbind).</b>\n\nTelegram ini tidak lagi terhubung ke akun Mahira manapun. Anda bisa menghubungkannya kembali dengan akun yang benar melalui menu Profil di website.')
+  } else {
+    await sendTelegramMessage(chatId, 'ℹ️ Akun Telegram ini belum terhubung ke user manapun.')
+  }
+}
