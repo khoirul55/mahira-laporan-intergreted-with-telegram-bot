@@ -99,7 +99,7 @@ async function handleStatusCommand(message: { chat: { id: number }; from: { id: 
   // Check report status
   const { data: plan } = await supabase
     .from('daily_work_plans')
-    .select('id, daily_reports(status, submitted_at)')
+    .select('id, daily_reports(status, submitted_at), plan_tasks(title, is_adhoc)')
     .eq('user_id', user.id)
     .eq('plan_date', today)
     .single()
@@ -110,10 +110,17 @@ async function handleStatusCommand(message: { chat: { id: number }; from: { id: 
   }
 
   const report = (plan as Record<string, unknown>).daily_reports as { status: string; submitted_at: string } | null
+  const tasks = (plan as Record<string, unknown>).plan_tasks as { title: string; is_adhoc: boolean }[] | null
+  
+  let tasksText = ''
+  if (tasks && tasks.length > 0) {
+    tasksText = '\n\n<b>📋 Daftar Tugas Hari Ini:</b>\n' + tasks.map((t, i) => `${i + 1}. ${t.title} ${t.is_adhoc ? '<i>(Susulan)</i>' : ''}`).join('\n')
+  }
+
   if (!report || report.status === 'draft') {
-    await sendTelegramMessage(chatId, `📝 Halo <b>${user.full_name}</b>,\nRencana kerja sudah dibuat, tapi laporan <b>belum disubmit</b>.\n\n📤 <a href="${process.env.NEXT_PUBLIC_APP_URL}/beranda/laporan">Submit Laporan</a>`)
+    await sendTelegramMessage(chatId, `📝 Halo <b>${user.full_name}</b>,\nRencana kerja sudah dibuat, tapi laporan <b>belum disubmit</b>.${tasksText}\n\n📤 <a href="${process.env.NEXT_PUBLIC_APP_URL}/beranda/laporan">Submit Laporan</a>`)
   } else {
-    await sendTelegramMessage(chatId, `✅ Halo <b>${user.full_name}</b>,\nLaporan hari ini sudah <b>disubmit</b>. Terima kasih! 🎉`)
+    await sendTelegramMessage(chatId, `✅ Halo <b>${user.full_name}</b>,\nLaporan hari ini sudah <b>disubmit</b>. Terima kasih! 🎉${tasksText}`)
   }
 }
 
