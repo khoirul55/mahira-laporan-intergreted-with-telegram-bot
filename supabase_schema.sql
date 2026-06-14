@@ -123,6 +123,8 @@ CREATE TABLE daily_reports (
   submitted_at    TIMESTAMPTZ,
   acknowledged_by UUID REFERENCES users(id),
   acknowledged_at TIMESTAMPTZ,
+  evidence_url    TEXT,
+  direksi_notes   TEXT,
   UNIQUE(user_id, report_date)
 );
 

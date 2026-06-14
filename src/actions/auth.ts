@@ -31,9 +31,14 @@ export async function loginAction(formData: FormData) {
 
   const { data: userData } = await supabase
     .from('users')
-    .select('role')
+    .select('role, is_active')
     .eq('id', user.id)
     .single()
+
+  if (userData?.is_active === false) {
+    await supabase.auth.signOut()
+    return { error: 'Akun Anda telah dinonaktifkan. Silakan hubungi pimpinan.' }
+  }
 
   if (userData?.role === 'direksi') {
     redirect('/dashboard')

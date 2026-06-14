@@ -40,23 +40,36 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Sudah login tapi akses /login → redirect sesuai role
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
-    const url = request.nextUrl.clone()
-
+  if (user) {
     const { data: userData } = await supabase
       .from('users')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    if (userData?.role === 'direksi') {
-      url.pathname = '/dashboard'
-    } else {
-      url.pathname = '/beranda'
+    // Sudah login tapi akses /login → redirect sesuai role
+    if (request.nextUrl.pathname.startsWith('/login')) {
+      const url = request.nextUrl.clone()
+      if (userData?.role === 'direksi') {
+        url.pathname = '/dashboard'
+      } else {
+        url.pathname = '/beranda'
+      }
+      return NextResponse.redirect(url)
     }
 
-    return NextResponse.redirect(url)
+    // Role guard: cegah staff akses dashboard dan sebaliknya
+    if (userData?.role === 'staff' && request.nextUrl.pathname.startsWith('/dashboard')) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/beranda'
+      return NextResponse.redirect(url)
+    }
+
+    if (userData?.role === 'direksi' && request.nextUrl.pathname.startsWith('/beranda')) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse

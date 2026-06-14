@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 export async function createAnnouncement(formData: FormData) {
   const title = formData.get('title') as string
   const content = formData.get('content') as string
+  const targetDivisionId = formData.get('target_division_id') as string
 
   if (!title || !content) {
     return { error: 'Judul dan konten harus diisi' }
@@ -32,6 +33,7 @@ export async function createAnnouncement(formData: FormData) {
     .insert([{
       title,
       content,
+      target_division_id: targetDivisionId && targetDivisionId !== 'all' ? parseInt(targetDivisionId) : null,
       created_by: user.id
     }])
 

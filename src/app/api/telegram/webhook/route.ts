@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
       await handleHelpCommand(update.message)
     } else if (text.startsWith('/izin')) {
       await handleIzinCommand(update.message)
+    } else {
+      await sendTelegramMessage(update.message.chat.id.toString(), '❓ Command tidak dikenali. Ketik /help untuk melihat daftar command yang tersedia.')
     }
 
     return NextResponse.json({ ok: true })
@@ -143,7 +145,8 @@ async function handleIzinCommand(message: { chat: { id: number } }) {
   // Get current month absences
   const now = new Date()
   const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-  const endOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-31`
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+  const endOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
 
   const { data: absences } = await supabase
     .from('absences')

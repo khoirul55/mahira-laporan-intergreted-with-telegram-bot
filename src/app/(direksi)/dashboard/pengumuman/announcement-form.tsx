@@ -9,7 +9,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from 'sonner'
 import { Send, Plus, Trash2, Loader2 } from 'lucide-react'
 
-export function CreateAnnouncementForm() {
+export function CreateAnnouncementForm({ divisions }: { divisions: any[] }) {
   const formRef = useRef<HTMLFormElement>(null)
   const [isPending, setIsPending] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -56,6 +56,19 @@ export function CreateAnnouncementForm() {
             required 
             className="bg-card border-border"
           />
+        </div>
+        <div>
+          <label htmlFor="target_division_id" className="block text-sm font-medium text-secondary-foreground mb-1">Target Divisi (Opsional)</label>
+          <select 
+            id="target_division_id" 
+            name="target_division_id" 
+            className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="all">Semua Divisi (Broadcast)</option>
+            {divisions?.map((div) => (
+              <option key={div.id} value={div.id}>{div.name}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-secondary-foreground mb-1">Isi Pengumuman</label>

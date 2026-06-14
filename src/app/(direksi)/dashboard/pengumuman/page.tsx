@@ -26,6 +26,12 @@ export default async function PengumumanPage() {
     .from('announcements')
     .select('*, author:users!created_by(full_name)')
     .order('created_at', { ascending: false })
+    .limit(100)
+
+  const { data: divisions } = await supabase
+    .from('divisions')
+    .select('id, name')
+    .order('name')
 
   return (
     <div className="p-6 md:p-10 max-w-5xl">
@@ -43,7 +49,7 @@ export default async function PengumumanPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <CreateAnnouncementForm />
+          <CreateAnnouncementForm divisions={divisions || []} />
         </div>
 
         <div className="lg:col-span-2 space-y-4">

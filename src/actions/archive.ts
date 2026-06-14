@@ -36,6 +36,25 @@ export async function uploadArchiveFile(
     return { error: 'Unauthorized' }
   }
 
+  const ALLOWED_MIME_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'image/jpeg',
+    'image/png'
+  ]
+  const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    return { error: 'Tipe file tidak diizinkan. Hanya PDF, Word, Excel, JPG, dan PNG.' }
+  }
+
+  if (file.size > MAX_FILE_SIZE) {
+    return { error: 'Ukuran file melebihi batas maksimal 5MB.' }
+  }
+
   try {
     // Generate unique file path
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
@@ -131,6 +150,7 @@ export async function getDivisionFiles() {
       .eq('division_id', userData.division_id)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
+      .limit(100)
 
     if (error) {
       return { error: error.message }
@@ -167,7 +187,7 @@ export async function getAllFiles(divisionId?: number) {
       query = query.eq('division_id', divisionId)
     }
 
-    const { data, error } = await query
+    const { data, error } = await query.limit(100)
 
     if (error) {
       return { error: error.message }
@@ -222,12 +242,22 @@ export async function deleteArchiveFile(fileId: number) {
     // Get file info first
     const { data: fileData, error: fetchError } = await supabase
       .from('division_documents')
-      .select('file_path')
+      .select('file_path, uploaded_by')
       .eq('id', fileId)
       .single()
 
     if (fetchError) {
       return { error: fetchError.message }
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (currentUser?.role !== 'direksi' && fileData.uploaded_by !== user.id) {
+      return { error: 'Anda hanya bisa menghapus file yang Anda unggah' }
     }
 
     // Delete from storage
@@ -288,26 +318,6 @@ export async function updateFileDescription(fileId: number, description: string)
   }
 }
 
-// Get list of divisions untuk filter
-export async function getDivisions() {
-  const supabase = await createClient()
-
-  try {
-    const { data, error } = await supabase
-      .from('divisions')
-      .select('id, name')
-      .order('name')
-
-    if (error) {
-      return { error: error.message }
-    }
-
-    return { data }
-
-  } catch (error) {
-    return { error: 'Terjadi kesalahan saat mengambil data divisi' }
-  }
-}
 
 // Toggle pin document (hanya untuk direksi)
 export async function togglePinDocument(fileId: number) {

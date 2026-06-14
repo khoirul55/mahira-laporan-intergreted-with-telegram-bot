@@ -17,6 +17,59 @@ function escapeSearch(input: string): string {
   return input.replace(/[%_\\]/g, '\\$&')
 }
 
+// Shared logic for date filtering
+function applyDateFilter(query: any, filters: SearchFilters) {
+  if (filters.dateRange && filters.dateRange !== 'custom') {
+    const now = new Date()
+    let startDate: Date | undefined
+    let endDate: Date | undefined
+
+    switch (filters.dateRange) {
+      case 'today':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+        break
+      case 'yesterday':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999)
+        break
+      case 'this_week':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() + 6, 23, 59, 59, 999)
+        break
+      case 'last_week':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() - 7)
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() - 1, 23, 59, 59, 999)
+        break
+      case 'this_month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+        break
+      case 'last_month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
+        break
+    }
+
+    if (startDate) {
+      query = query.gte('report_date', startDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
+    }
+    if (endDate) {
+      query = query.lte('report_date', endDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
+    }
+  }
+
+  // Custom date range
+  if (filters.date_from) {
+    query = query.gte('report_date', filters.date_from)
+  }
+  if (filters.date_to) {
+    query = query.lte('report_date', filters.date_to)
+  }
+
+  return query
+}
+
 // Search daily reports untuk staff
 export async function searchReports(filters: SearchFilters, userId?: string) {
   const supabase = await createClient()
@@ -50,64 +103,14 @@ export async function searchReports(filters: SearchFilters, userId?: string) {
     }
 
     // Apply date range filter
-    if (filters.dateRange && filters.dateRange !== 'custom') {
-      const today = new Date()
-      let startDate: Date | undefined
-      let endDate: Date | undefined = new Date(today)
-
-      switch (filters.dateRange) {
-        case 'today':
-          startDate = new Date(today.setHours(0, 0, 0, 0))
-          break
-        case 'yesterday':
-          startDate = new Date(today.setDate(today.getDate() - 1))
-          startDate.setHours(0, 0, 0, 0)
-          endDate = new Date(today)
-          endDate.setHours(23, 59, 59, 999)
-          break
-        case 'this_week':
-          startDate = new Date(today.setDate(today.getDate() - today.getDay()))
-          startDate.setHours(0, 0, 0, 0)
-          break
-        case 'last_week':
-          startDate = new Date(today.setDate(today.getDate() - today.getDay() - 7))
-          startDate.setHours(0, 0, 0, 0)
-          endDate = new Date(today.setDate(today.getDate() - today.getDay()))
-          endDate.setHours(23, 59, 59, 999)
-          break
-        case 'this_month':
-          startDate = new Date(today.getFullYear(), today.getMonth(), 1)
-          break
-        case 'last_month':
-          startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-          endDate = new Date(today.getFullYear(), today.getMonth(), 0)
-          break
-        default:
-          break
-      }
-
-      if (startDate) {
-        query = query.gte('report_date', startDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
-      }
-      if (endDate) {
-        query = query.lte('report_date', endDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
-      }
-    }
-
-    // Custom date range
-    if (filters.date_from) {
-      query = query.gte('report_date', filters.date_from)
-    }
-    if (filters.date_to) {
-      query = query.lte('report_date', filters.date_to)
-    }
+    query = applyDateFilter(query, filters)
 
     // Status filter
     if (filters.status && filters.status !== 'all') {
       query = query.eq('status', filters.status)
     }
 
-    const { data, error } = await query
+    const { data, error } = await query.limit(100)
 
     if (error) {
       return { error: error.message }
@@ -144,58 +147,8 @@ export async function searchAllReports(filters: SearchFilters) {
       query = query.or(`users.full_name.ilike.%${escaped}%`)
     }
 
-    // Apply date range filter (sama seperti di atas)
-    if (filters.dateRange && filters.dateRange !== 'custom') {
-      const today = new Date()
-      let startDate: Date | undefined
-      let endDate: Date | undefined = new Date(today)
-
-      switch (filters.dateRange) {
-        case 'today':
-          startDate = new Date(today.setHours(0, 0, 0, 0))
-          break
-        case 'yesterday':
-          startDate = new Date(today.setDate(today.getDate() - 1))
-          startDate.setHours(0, 0, 0, 0)
-          endDate = new Date(today)
-          endDate.setHours(23, 59, 59, 999)
-          break
-        case 'this_week':
-          startDate = new Date(today.setDate(today.getDate() - today.getDay()))
-          startDate.setHours(0, 0, 0, 0)
-          break
-        case 'last_week':
-          startDate = new Date(today.setDate(today.getDate() - today.getDay() - 7))
-          startDate.setHours(0, 0, 0, 0)
-          endDate = new Date(today.setDate(today.getDate() - today.getDay()))
-          endDate.setHours(23, 59, 59, 999)
-          break
-        case 'this_month':
-          startDate = new Date(today.getFullYear(), today.getMonth(), 1)
-          break
-        case 'last_month':
-          startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-          endDate = new Date(today.getFullYear(), today.getMonth(), 0)
-          break
-        default:
-          break
-      }
-
-      if (startDate) {
-        query = query.gte('report_date', startDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
-      }
-      if (endDate) {
-        query = query.lte('report_date', endDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' }))
-      }
-    }
-
-    // Custom date range
-    if (filters.date_from) {
-      query = query.gte('report_date', filters.date_from)
-    }
-    if (filters.date_to) {
-      query = query.lte('report_date', filters.date_to)
-    }
+    // Apply date range filter
+    query = applyDateFilter(query, filters)
 
     // Division filter (use direct column, not nested relation)
     if (filters.division_id && filters.division_id !== 'all') {
@@ -207,7 +160,7 @@ export async function searchAllReports(filters: SearchFilters) {
       query = query.eq('status', filters.status)
     }
 
-    const { data, error } = await query
+    const { data, error } = await query.limit(100)
 
     if (error) {
       return { error: error.message }
@@ -248,9 +201,21 @@ export async function exportReportsToCSV(filters: SearchFilters, isDireksi = fal
       'Feedback Direksi',
     ]
 
+    type ExportReportData = {
+      report_date: string;
+      status: string;
+      direksi_notes?: string;
+      users?: {
+        full_name: string;
+        divisions?: {
+          name: string;
+        } | null;
+      } | null;
+    }
+
     const csvContent = [
       headers.join(','),
-      ...reports.map((report: any) => [
+      ...reports.map((report: ExportReportData) => [
         report.report_date,
         `"${report.users?.full_name || ''}"`,
         `"${report.users?.divisions?.name || ''}"`,

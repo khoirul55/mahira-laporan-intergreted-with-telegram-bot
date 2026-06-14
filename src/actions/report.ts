@@ -128,9 +128,9 @@ export async function submitDailyReport(reportId: number, updates: TaskUpdateInp
   if (report?.user_id !== user.id) return { error: 'Bukan laporan Anda' }
   if (report?.status === 'submitted') return { error: 'Laporan ini sudah disubmit' }
 
-  // Update each task update
-  for (const update of updates) {
-    const { error } = await supabase
+  // Update each task update concurrently
+  const updatePromises = updates.map(update => 
+    supabase
       .from('task_updates')
       .update({
         completion_status: update.completion_status,
@@ -138,9 +138,11 @@ export async function submitDailyReport(reportId: number, updates: TaskUpdateInp
       })
       .eq('id', update.update_id)
       .eq('report_id', reportId) // extra safety
-      
-    if (error) return { error: `Gagal update tugas: ${error.message}` }
-  }
+  )
+
+  const results = await Promise.all(updatePromises)
+  const failedUpdate = results.find(r => r.error)
+  if (failedUpdate) return { error: `Gagal update tugas: ${failedUpdate.error?.message}` }
 
   // Submit the report
   const { error: submitError } = await supabase

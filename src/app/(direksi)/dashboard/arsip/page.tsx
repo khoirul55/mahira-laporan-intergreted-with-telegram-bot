@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { FileList } from '@/components/file-list'
-import { getAllFiles, getDivisions } from '@/actions/archive'
+import { getAllFiles } from '@/actions/archive'
+import { getDivisions } from '@/actions/search'
 import { FolderOpen, Upload, FileText, Building2 } from 'lucide-react'
 import ArchiveFilterClient from './filter-client'
 

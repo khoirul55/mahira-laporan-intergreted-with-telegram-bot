@@ -5,6 +5,11 @@ import { generateAnalyticsInsight, type AnalyticsInsightData } from '@/lib/gemin
 
 const MONTH_NAMES = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
 
+type MonthlyReportData = {
+  completionRate?: number;
+  [key: string]: unknown;
+}
+
 export async function getAnalyticsData(month: number, year: number) {
   const supabase = await createClient()
 
@@ -35,7 +40,7 @@ export async function getAnalyticsData(month: number, year: number) {
   const leaderboard: { name: string; division: string; rate: number }[] = []
 
   monthlyReports?.forEach(r => {
-    const auto = r.auto_generated_data as any
+    const auto = r.auto_generated_data as MonthlyReportData | null
     if (auto && typeof auto.completionRate === 'number') {
       totalRate += auto.completionRate
       countWithRate++
@@ -56,7 +61,7 @@ export async function getAnalyticsData(month: number, year: number) {
   const divisionMap: Record<string, { id: number; name: string; totalRate: number; staffCount: number }> = {}
   
   monthlyReports?.forEach(r => {
-    const auto = r.auto_generated_data as any
+    const auto = r.auto_generated_data as MonthlyReportData | null
     if (auto && typeof auto.completionRate === 'number' && r.divisions) {
       const dName = r.divisions.name
       if (!divisionMap[dName]) {

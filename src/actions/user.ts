@@ -15,6 +15,12 @@ export async function createUser(formData: FormData) {
     return { error: 'Semua kolom wajib diisi' }
   }
 
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: currentUser } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (currentUser?.role !== 'direksi') return { error: 'Hanya direksi yang dapat membuat pengguna' }
+
   const adminAuth = createAdminClient().auth
 
   // 1. Create user in Supabase Auth (this triggers the database function to create public.users row)
@@ -55,6 +61,10 @@ export async function updateUser(formData: FormData) {
   if (!id || !full_name) return { error: 'Data tidak lengkap' }
 
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: currentUser } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (currentUser?.role !== 'direksi') return { error: 'Hanya direksi yang dapat mengubah pengguna' }
 
   const { error } = await supabase
     .from('users')
@@ -78,6 +88,12 @@ export async function deleteUser(formData: FormData) {
   const id = formData.get('id') as string
 
   if (!id) return { error: 'ID tidak ditemukan' }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+  const { data: currentUser } = await supabase.from('users').select('role').eq('id', user.id).single()
+  if (currentUser?.role !== 'direksi') return { error: 'Hanya direksi yang dapat menghapus pengguna' }
 
   const adminAuth = createAdminClient().auth
 
