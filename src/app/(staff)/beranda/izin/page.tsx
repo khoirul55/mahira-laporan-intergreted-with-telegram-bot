@@ -34,7 +34,7 @@ export default async function IzinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-card text-white p-6">
+    <div className="min-h-screen bg-card text-foreground p-6">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Header */}
