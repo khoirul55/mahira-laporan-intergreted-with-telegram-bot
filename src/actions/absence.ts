@@ -10,6 +10,12 @@ export async function createAbsence(formData: FormData) {
 
   if (!absence_date || !type) return { error: 'Tanggal dan tipe izin wajib diisi' }
 
+  // Prevent past dates
+  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' })
+  if (absence_date < today) {
+    return { error: 'Tidak dapat mengajukan izin untuk tanggal yang sudah berlalu (Backdate).' }
+  }
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 

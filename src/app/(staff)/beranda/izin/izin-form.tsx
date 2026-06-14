@@ -43,7 +43,14 @@ export function IzinForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="absence_date">Tanggal</Label>
-          <Input id="absence_date" name="absence_date" type="date" required className="bg-card border-border" />
+          <Input 
+            id="absence_date" 
+            name="absence_date" 
+            type="date" 
+            required 
+            className="bg-card border-border"
+            min={new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' })} 
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="type">Tipe Izin</Label>
