@@ -48,3 +48,5 @@ next-env.d.ts
 !README.md
 *.docx
 *.html
+
+supabase_schema.sql
